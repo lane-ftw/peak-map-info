@@ -79,100 +79,106 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAtK5L-nubV-_i-gEgnP2_gzLi31IGl0zg",
-  authDomain: "peak-map-vote.firebaseapp.com",
-  projectId: "peak-map-vote",
-  storageBucket: "peak-map-vote.firebasestorage.app",
-  messagingSenderId: "317069037525",
-  appId: "1:317069037525:web:43512bf56f7f67c2c5775c"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-let userVotes = {biome:null, tomb:null};
+window.onload = function() {
+  const firebaseConfig = {
+    apiKey: "AIzaSyAtK5L-nubV-_i-gEgnP2_gzLi31IGl0zg",
+    authDomain: "peak-map-vote.firebaseapp.com",
+    projectId: "peak-map-vote",
+    storageBucket: "peak-map-vote.firebasestorage.app",
+    messagingSenderId: "317069037525",
+    appId: "1:317069037525:web:43512bf56f7f67c2c5775c"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  let userVotes = {biome:null, tomb:null};
 
-// Determine today's voting doc based on 18:00 UTC reset
-function getTodayString() {
-  const now = new Date();
-  const utcHour = now.getUTCHours();
-  const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-  if (utcHour < 18) utcDate.setUTCDate(utcDate.getUTCDate() - 1);
-  return utcDate.toISOString().split('T')[0];
-}
+  function getTodayString() {
+    const now = new Date();
+    const utcHour = now.getUTCHours();
+    const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    if (utcHour < 18) utcDate.setUTCDate(utcDate.getUTCDate() - 1);
+    return utcDate.toISOString().split('T')[0];
+  }
 
-// Initialize voting
-async function initializeVoting(){
-  const today = getTodayString();
-  try {
-    db.collection('daily-votes').doc(today).onSnapshot(doc=>{
-      if(doc.exists) updateDisplay(doc.data().votes);
-      else initializeTodayVotes(today);
-    });
-  } catch(e){console.error(e); document.getElementById('status').innerHTML='<div style="color:#e17055;">Error loading votes.</div>';}
-}
-
-// Create today's vote doc if missing
-async function initializeTodayVotes(today){
-  const init = {biome:{mesa:0, alpine:0}, tomb:{yes:0, no:0}};
-  await db.collection('daily-votes').doc(today).set({votes:init, date:today, lastUpdated:firebase.firestore.FieldValue.serverTimestamp()});
-}
-
-// Cast vote
-async function vote(category, option){
-  if(userVotes[category]) {alert(`You've already voted ${userVotes[category]} for ${category}!`); return;}
-  const today = getTodayString();
-  const btn = document.getElementById(option+'-btn');
-  try{
-    btn.disabled=true; btn.textContent='Voting...';
-    await db.collection('daily-votes').doc(today).update({
-      [`votes.${category}.${option}`]: firebase.firestore.FieldValue.increment(1),
+  async function initializeTodayVotes(today){
+    const init = {biome:{mesa:0, alpine:0}, tomb:{yes:0, no:0}};
+    await db.collection('daily-votes').doc(today).set({
+      votes:init,
+      date:today,
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
     });
-    userVotes[category]=option;
-    btn.style.transform='scale(0.95)';
-    setTimeout(()=>{btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);},200);
-  }catch(e){console.error(e); alert('Error submitting vote.'); btn.disabled=false; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);}
-}
+  }
 
-// Update UI counts
-function updateDisplay(votes){
-  document.getElementById('mesa-count').textContent=votes.biome.mesa;
-  document.getElementById('alpine-count').textContent=votes.biome.alpine;
-  document.getElementById('yes-count').textContent=votes.tomb.yes;
-  document.getElementById('no-count').textContent=votes.tomb.no;
+  function updateDisplay(votes){
+    document.getElementById('mesa-count').textContent = votes.biome.mesa;
+    document.getElementById('alpine-count').textContent = votes.biome.alpine;
+    document.getElementById('yes-count').textContent = votes.tomb.yes;
+    document.getElementById('no-count').textContent = votes.tomb.no;
 
-  if(userVotes.biome){document.getElementById('mesa-btn').disabled=true; document.getElementById('alpine-btn').disabled=true;}
-  if(userVotes.tomb){document.getElementById('yes-btn').disabled=true; document.getElementById('no-btn').disabled=true;}
+    const biomeWinner = votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
+    const tombWinner = votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
+    const total = votes.biome.mesa + votes.biome.alpine + votes.tomb.yes + votes.tomb.no;
+    document.getElementById('status').textContent = total===0 ?
+      'Community consensus: No votes yet today' :
+      `Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
+  }
 
-  const biomeWinner = votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
-  const tombWinner = votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
-  const total=votes.biome.mesa+votes.biome.alpine+votes.tomb.yes+votes.tomb.no;
-  document.getElementById('status').textContent=total===0?'Community consensus: No votes yet today':`Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
-}
+  function initializeVoting(){
+    const today = getTodayString();
+    const docRef = db.collection('daily-votes').doc(today);
 
-// Load official status (GitHub Pages JSON)
-async function loadOfficialStatus(){
-  try{
-    const resp=await fetch('./status.json');
-    if(resp.ok){displayOfficialStatus(await resp.json());}
-    else document.getElementById('official-info').textContent='Official status not available';
-  }catch(e){console.error(e); document.getElementById('official-info').textContent='Error loading official status';}
-}
+    docRef.onSnapshot(doc=>{
+      if(doc.exists){
+        updateDisplay(doc.data().votes);
+      } else {
+        initializeTodayVotes(today);
+      }
+    });
+  }
 
-function displayOfficialStatus(status){
-  const biomeText=status.biome?status.biome.charAt(0).toUpperCase()+status.biome.slice(1):'Unknown';
-  let tombText='Unknown';
-  if(status.tomb==='yes') tombText='Open';
-  else if(status.tomb==='no') tombText='Closed';
-  else if(status.tomb==='partial') tombText='Partially Open';
-  else if(status.tomb==='glitch') tombText='Glitch Access Only';
-  document.getElementById('official-info').textContent=`${biomeText} | Tomb ${tombText}`;
-  if(status.lastUpdated) document.getElementById('official-updated').textContent=`Last updated: ${new Date(status.lastUpdated).toUTCString()}`;
-}
+  async function vote(category, option){
+    if(userVotes[category]) { alert(`You've already voted ${userVotes[category]} for ${category}!`); return; }
+    const today = getTodayString();
+    const btn = document.getElementById(option+'-btn');
+    try {
+      btn.disabled=true; btn.textContent='Voting...';
+      await db.collection('daily-votes').doc(today).update({
+        [`votes.${category}.${option}`]: firebase.firestore.FieldValue.increment(1),
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      userVotes[category]=option;
+      btn.style.transform='scale(0.95)';
+      setTimeout(()=>{ btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1); },200);
+    } catch(e) {
+      console.error(e); alert('Error submitting vote.'); btn.disabled=false; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
+    }
+  }
 
-// Call functions directly at script end
-loadOfficialStatus();
-initializeVoting();
+  async function loadOfficialStatus(){
+    try {
+      const resp = await fetch('./status.json');
+      if(resp.ok) displayOfficialStatus(await resp.json());
+      else document.getElementById('official-info').textContent='Official status not available';
+    } catch(e){ console.error(e); document.getElementById('official-info').textContent='Error loading official status'; }
+  }
+
+  function displayOfficialStatus(status){
+    const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
+    let tombText = 'Unknown';
+    if(status.tomb==='yes') tombText='Open';
+    else if(status.tomb==='no') tombText='Closed';
+    else if(status.tomb==='partial') tombText='Partially Open';
+    else if(status.tomb==='glitch') tombText='Glitch Access Only';
+    document.getElementById('official-info').textContent = `${biomeText} | Tomb ${tombText}`;
+    if(status.lastUpdated) document.getElementById('official-updated').textContent = `Last updated: ${new Date(status.lastUpdated.toDate()).toUTCString()}`;
+  }
+
+  loadOfficialStatus();
+  initializeVoting();
+
+  // expose vote function globally for buttons
+  window.vote = vote;
+};
 </script>
 </body>
 </html>
