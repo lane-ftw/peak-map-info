@@ -44,6 +44,7 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
     <h1>Official PEAK Status</h1>
     <div class="status-images" id="official-images"></div>
     <div class="status-info" id="official-info">Loading official status...</div>
+    <div id="official-images" style="text-align:center; margin:10px 0;"></div>
     <div class="last-updated" id="official-updated"></div>
   </div>
 
@@ -100,60 +101,58 @@ window.onload = function(){
   }
 
   function displayOfficialStatus(status) {
-  try {
-    const infoDiv = document.getElementById('official-info');
-    const imagesDiv = document.getElementById('official-images');
-    if (!imagesDiv || !infoDiv) return;
-    imagesDiv.innerHTML = '';
+  const infoDiv = document.getElementById('official-info');
+  const imagesDiv = document.getElementById('official-images');
+  const updatedDiv = document.getElementById('official-updated');
+  if (!infoDiv || !imagesDiv || !updatedDiv) return;
 
-    // -----------------------------
-    // Biome Image
-    // -----------------------------
-    if (status.biomeImage) {
-      const biomeImg = document.createElement('img');
-      biomeImg.src = status.biomeImage;
-      biomeImg.alt = status.biome || 'Biome';
-      biomeImg.height = 64;
-      biomeImg.style.verticalAlign = 'middle';
-      imagesDiv.appendChild(biomeImg);
+  imagesDiv.innerHTML = '';
+
+  // Biome image
+  if (status.biomeImage) {
+    const biomeImg = document.createElement('img');
+    biomeImg.src = status.biomeImage;
+    biomeImg.alt = status.biome || 'Biome';
+    biomeImg.height = 64;
+    biomeImg.style.verticalAlign = 'middle';
+    imagesDiv.appendChild(biomeImg);
+  }
+
+  // Tomb image or emoji
+  if (status.tombImage) {
+    if (status.tombImage.startsWith('http')) {
+      const tombImg = document.createElement('img');
+      tombImg.src = status.tombImage;
+      tombImg.alt = status.tomb || 'Tomb';
+      tombImg.height = 64;
+      tombImg.style.verticalAlign = 'middle';
+      imagesDiv.appendChild(tombImg);
+    } else {
+      const tombSpan = document.createElement('span');
+      tombSpan.textContent = status.tombImage;
+      tombSpan.style.fontSize = '64px';
+      tombSpan.style.verticalAlign = 'middle';
+      imagesDiv.appendChild(tombSpan);
     }
+  }
 
-    // -----------------------------
-    // Tomb Image or Emoji
-    // -----------------------------
-    if (status.tombImage) {
-      if (status.tombImage.startsWith('http')) {
-        // Tomb is an image URL
-        const tombImg = document.createElement('img');
-        tombImg.src = status.tombImage;
-        tombImg.alt = status.tomb || 'Tomb';
-        tombImg.height = 64;
-        tombImg.style.verticalAlign = 'middle';
-        imagesDiv.appendChild(tombImg);
-      } else {
-        // Tomb is an emoji
-        const tombSpan = document.createElement('span');
-        tombSpan.textContent = status.tombImage;
-        tombSpan.style.fontSize = '64px';
-        tombSpan.style.verticalAlign = 'middle';
-        imagesDiv.appendChild(tombSpan);
-      }
-    }
+  // Text
+  const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
+  let tombText = 'Unknown';
+  switch (status.tomb) {
+    case 'yes': tombText='Open'; break;
+    case 'no': tombText='Closed'; break;
+    case 'partial': tombText='Partially Open'; break;
+    case 'glitch': tombText='Glitch Access Only'; break;
+  }
+  infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
 
-    // -----------------------------
-    // Text Info
-    // -----------------------------
-    const biomeText = status.biome
-      ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1)
-      : 'Unknown';
-
-    let tombText = 'Unknown';
-    switch (status.tomb) {
-      case 'yes': tombText = 'Open'; break;
-      case 'no': tombText = 'Closed'; break;
-      case 'partial': tombText = 'Partially Open'; break;
-      case 'glitch': tombText = 'Glitch Access Only'; break;
-    }
+  // Last updated
+  if (status.lastUpdated) {
+    const lastUpdatedDate = new Date(status.lastUpdated);
+    updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
+  }
+}
 
     infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
 
