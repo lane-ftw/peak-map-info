@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PEAK Map Info</title>
 <style>
-/* your existing styles... */
 * {margin:0;padding:0;box-sizing:border-box;}
 body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%); min-height:100vh; padding:20px; color:#e0e0e0;}
 .container {max-width:800px; margin:0 auto; background:#2a2a2a; border-radius:15px; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden; border:1px solid #404040;}
@@ -40,12 +39,12 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 </head>
 <body>
 <div class="container">
-<div class="official-status" id="official-status">
-  <h1>Official PEAK Status</h1>
-  <div id="official-images" style="text-align:center; margin-bottom:10px;"></div>
-  <div class="status-info" id="official-info">Loading official status...</div>
-  <div class="last-updated" id="official-updated"></div>
-</div>
+  <div class="official-status" id="official-status">
+    <h1>Official PEAK Status</h1>
+    <div id="official-images"></div>
+    <div class="status-info" id="official-info">Loading official status...</div>
+    <div class="last-updated" id="official-updated"></div>
+  </div>
 
   <div class="section-divider"></div>
   <div class="community-voting-header">Community Voting (Your Input)</div>
@@ -79,43 +78,16 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
   <div class="current-status" id="status"><div class="loading">Loading community votes...</div></div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-// ======= OFFICIAL STATUS (WORKING) =======
 async function loadOfficialStatus() {
   try {
     const resp = await fetch('./status.json?ts=' + new Date().getTime());
-    if (resp.ok) {
-      const status = await resp.json();
-      displayOfficialStatus(status); // your existing text logic stays
-      // --- Inject images above text ---
-      const imagesDiv = document.getElementById('official-images');
-      imagesDiv.innerHTML = '';
-      if (status.biomeImage) {
-        const biomeImg = document.createElement('img');
-        biomeImg.src = status.biomeImage;
-        biomeImg.height = 54;
-        biomeImg.style.marginRight = '5px';
-        imagesDiv.appendChild(biomeImg);
-      }
-      if (status.tombImage) {
-        const tombEl = document.createElement(status.tombImage.startsWith('http') ? 'img' : 'span');
-        if (tombEl.tagName === 'IMG') {
-          tombEl.src = status.tombImage;
-          tombEl.height = 54;
-        } else {
-          tombEl.textContent = status.tombImage;
-          tombEl.style.fontSize = '54px';
-        }
-        imagesDiv.appendChild(tombEl);
-      }
-    } else {
-      document.getElementById('official-info').textContent = 'Official status not available';
-    }
-  } catch (e) {
+    if(resp.ok) displayOfficialStatus(await resp.json());
+    else document.getElementById('official-info').textContent = 'Official status not available';
+  } catch(e) {
     console.error(e);
     document.getElementById('official-info').textContent = 'Error loading official status';
   }
@@ -125,91 +97,21 @@ function displayOfficialStatus(status) {
   const infoDiv = document.getElementById('official-info');
   const imagesDiv = document.getElementById('official-images');
   const updatedDiv = document.getElementById('official-updated');
+  imagesDiv.innerHTML = '';
 
-  imagesDiv.innerHTML = ''; // clear previous images
-
-  // --- Biome Image ---
-  if (status.biomeImage) {
+  // Biome image
+  if(status.biomeImage) {
     const biomeImg = document.createElement('img');
     biomeImg.src = status.biomeImage;
     biomeImg.alt = status.biome || 'Biome';
-    biomeImg.height = 54;
+    biomeImg.height = 64;
     biomeImg.style.marginRight = '5px';
     imagesDiv.appendChild(biomeImg);
   }
 
-  // --- Tomb Image / Emoji ---
-  if (status.tombImage) {
-    if (status.tombImage.startsWith('http')) {
-      const tombImg = document.createElement('img');
-      tombImg.src = status.tombImage;
-      tombImg.alt = status.tomb || 'Tomb';
-      tombImg.height = 54;
-      imagesDiv.appendChild(tombImg);
-    } else {
-      const tombSpan = document.createElement('span');
-      tombSpan.textContent = status.tombImage;
-      tombSpan.style.fontSize = '54px';
-      tombSpan.style.verticalAlign = 'middle';
-      imagesDiv.appendChild(tombSpan);
-    }
-  }
-
-  // --- Text Below Images ---
-  const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
-
-  // Map tomb (emoji or string) to text
-  let tombText = 'Unknown';
-  switch (status.tomb) {
-    case '🟢':
-    case 'yes':
-      tombText = 'Open';
-      break;
-    case '🔴':
-    case 'no':
-      tombText = 'Closed';
-      break;
-    case '🟡':
-    case 'partial':
-      tombText = 'Partially Open';
-      break;
-    case '🟠':
-    case 'glitch':
-      tombText = 'Glitch Access Only';
-      break;
-  }
-
-  infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
-
-  // --- Last Updated ---
-  if (status.lastUpdated) {
-    const lastUpdatedDate = new Date(status.lastUpdated);
-    updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
-  }
-}
-
-
-  // Text below images
-  const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
-  let tombText = 'Unknown';
-  switch (status.tomb) {
-    case 'yes': tombText='Open'; break;
-    case 'no': tombText='Closed'; break;
-    case 'partial': tombText='Partially Open'; break;
-    case 'glitch': tombText='Glitch Access Only'; break;
-  }
-  infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
-
-  if (status.lastUpdated) {
-    const lastUpdatedDate = new Date(status.lastUpdated);
-    updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
-  }
-}
-
-
   // Tomb image or emoji
-  if (status.tombImage) {
-    if (status.tombImage.startsWith('http')) {
+  if(status.tombImage) {
+    if(status.tombImage.startsWith('http')) {
       const tombImg = document.createElement('img');
       tombImg.src = status.tombImage;
       tombImg.alt = status.tomb || 'Tomb';
@@ -225,25 +127,28 @@ function displayOfficialStatus(status) {
     }
   }
 
-  // Text
+  // Text below images
   const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
   let tombText = 'Unknown';
-  switch (status.tomb) {
-    case 'yes': tombText='Open'; break;
-    case 'no': tombText='Closed'; break;
-    case 'partial': tombText='Partially Open'; break;
-    case 'glitch': tombText='Glitch Access Only'; break;
+  switch(status.tomb) {
+    case 'yes':
+    case '🟢': tombText='Open'; break;
+    case 'no':
+    case '🔴': tombText='Closed'; break;
+    case 'partial':
+    case '🟡': tombText='Partially Open'; break;
+    case 'glitch':
+    case '🟠': tombText='Glitch Access Only'; break;
   }
   infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
 
-  // Last updated
-  if (status.lastUpdated) {
+  if(status.lastUpdated) {
     const lastUpdatedDate = new Date(status.lastUpdated);
     updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
   }
 }
 
-// ======= COMMUNITY VOTING (FIREBASE) =======
+// ===== Firebase Voting =====
 window.onload = function() {
   loadOfficialStatus();
 
@@ -257,18 +162,18 @@ window.onload = function() {
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-  let userVotes = {biome:null, tomb:null};
+  let userVotes = {biome:null,tomb:null};
 
   function getTodayString() {
     const now = new Date();
     const utcHour = now.getUTCHours();
     const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-    if (utcHour < 18) utcDate.setUTCDate(utcDate.getUTCDate() - 1);
+    if(utcHour<18) utcDate.setUTCDate(utcDate.getUTCDate()-1);
     return utcDate.toISOString().split('T')[0];
   }
 
   async function initializeTodayVotes(today){
-    const init = {biome:{mesa:0, alpine:0}, tomb:{yes:0, no:0}};
+    const init = {biome:{mesa:0,alpine:0},tomb:{yes:0,no:0}};
     await db.collection('daily-votes').doc(today).set({
       votes:init,
       date:today,
@@ -277,37 +182,31 @@ window.onload = function() {
   }
 
   function updateDisplay(votes){
-    document.getElementById('mesa-count').textContent = votes.biome.mesa;
-    document.getElementById('alpine-count').textContent = votes.biome.alpine;
-    document.getElementById('yes-count').textContent = votes.tomb.yes;
-    document.getElementById('no-count').textContent = votes.tomb.no;
+    document.getElementById('mesa-count').textContent=votes.biome.mesa;
+    document.getElementById('alpine-count').textContent=votes.biome.alpine;
+    document.getElementById('yes-count').textContent=votes.tomb.yes;
+    document.getElementById('no-count').textContent=votes.tomb.no;
 
     const biomeWinner = votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
     const tombWinner = votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
-    const total = votes.biome.mesa + votes.biome.alpine + votes.tomb.yes + votes.tomb.no;
-    document.getElementById('status').textContent = total===0 ?
-      'Community consensus: No votes yet today' :
-      `Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
+    const total=votes.biome.mesa+votes.biome.alpine+votes.tomb.yes+votes.tomb.no;
+    document.getElementById('status').textContent = total===0?'Community consensus: No votes yet today':`Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
   }
 
   function initializeVoting(){
-    const today = getTodayString();
-    const docRef = db.collection('daily-votes').doc(today);
-
+    const today=getTodayString();
+    const docRef=db.collection('daily-votes').doc(today);
     docRef.onSnapshot(doc=>{
-      if(doc.exists){
-        updateDisplay(doc.data().votes);
-      } else {
-        initializeTodayVotes(today);
-      }
+      if(doc.exists){updateDisplay(doc.data().votes);}
+      else{initializeTodayVotes(today);}
     });
   }
 
   async function vote(category, option){
-    if(userVotes[category]) { alert(`You've already voted ${userVotes[category]} for ${category}!`); return; }
-    const today = getTodayString();
-    const btn = document.getElementById(option+'-btn');
-    try {
+    if(userVotes[category]){alert(`You've already voted ${userVotes[category]} for ${category}!`);return;}
+    const today=getTodayString();
+    const btn=document.getElementById(option+'-btn');
+    try{
       btn.disabled=true; btn.textContent='Voting...';
       await db.collection('daily-votes').doc(today).update({
         [`votes.${category}.${option}`]: firebase.firestore.FieldValue.increment(1),
@@ -315,14 +214,15 @@ window.onload = function() {
       });
       userVotes[category]=option;
       btn.style.transform='scale(0.95)';
-      setTimeout(()=>{ btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1); },200);
-    } catch(e) {
-      console.error(e); alert('Error submitting vote.'); btn.disabled=false; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
+      setTimeout(()=>{btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);},200);
+    }catch(e){
+      console.error(e); alert('Error submitting vote.');
+      btn.disabled=false; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
     }
   }
 
   initializeVoting();
-  window.vote = vote;
+  window.vote=vote;
 };
 </script>
 </body>
