@@ -1,7 +1,9 @@
 {
   "date": "2025-08-20",
   "biome": "alpine",
-  "tomb": null,
-  "lastUpdated": "2025-08-20T21:20:04.845967+00:00",
+  "tomb": "no",
+  "biomeImage": "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/64px-Alpinist_Badge.webp",
+  "tombImage": "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/64px-Alpinist_Badge.webp",
+  "lastUpdated": "2025-08-20T21:41:58.650859+00:00",
   "source": "discord_bot"
 }
