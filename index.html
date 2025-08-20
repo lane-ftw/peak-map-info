@@ -101,56 +101,54 @@ function getTodayString() {
 }
 
 // Initialize voting
-async function initializeVoting(){
-  const today = getTodayString();
-  try {
-    db.collection('daily-votes').doc(today).onSnapshot(doc=>{
-      if(doc.exists) updateDisplay(doc.data().votes);
-      else initializeTodayVotes(today);
-    });
-  } catch(e){console.error(e); document.getElementById('status').innerHTML='<div style="color:#e17055;">Error loading votes.</div>';}
-}
-
-// Create today's vote doc if missing
-async function initializeTodayVotes(today){
-  const init = {biome:{mesa:0, alpine:0}, tomb:{yes:0, no:0}};
-  await db.collection('daily-votes').doc(today).set({votes:init, date:today, lastUpdated:firebase.firestore.FieldValue.serverTimestamp()});
-}
-
-// Cast vote (secure with merge)
-async function vote(category, option){
-  if(userVotes[category]) {
+async function vote(category, option) {
+  if (userVotes[category]) {
     alert(`You've already voted ${userVotes[category]} for ${category}!`);
     return;
   }
+
   const today = getTodayString();
-  const btn = document.getElementById(option+'-btn');
+  const btn = document.getElementById(option + '-btn');
 
   try {
     btn.disabled = true;
     btn.textContent = 'Voting...';
 
-    const voteUpdate = {};
-    voteUpdate[`votes.${category}.${option}`] = firebase.firestore.FieldValue.increment(1);
-    voteUpdate['lastUpdated'] = firebase.firestore.FieldValue.serverTimestamp();
+    const docRef = db.collection('daily-votes').doc(today);
+    const docSnap = await docRef.get();
 
-    await db.collection('daily-votes').doc(today).set(voteUpdate, { merge: true });
+    if (docSnap.exists) {
+      // Read current votes map
+      let votes = docSnap.data().votes;
 
-    userVotes[category] = option;
-    btn.style.transform = 'scale(0.95)';
-    setTimeout(() => {
-      btn.style.transform = '';
+      // Increment the correct nested value
+      votes[category][option] += 1;
+
+      // Update only top-level 'votes' and 'lastUpdated'
+      await docRef.update({
+        votes: votes,
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      userVotes[category] = option;
+      btn.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        btn.style.transform = '';
+        btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
+      }, 200);
+    } else {
+      alert("Today's vote document is missing.");
+      btn.disabled = false;
       btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
-    }, 200);
-
-  } catch(e) {
+    }
+  } catch (e) {
     console.error(e);
     alert('Error submitting vote.');
     btn.disabled = false;
     btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
   }
 }
-
+  
 // Update UI counts
 function updateDisplay(votes){
   document.getElementById('mesa-count').textContent=votes.biome.mesa;
