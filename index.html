@@ -39,67 +39,69 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 </head>
 <body>
 <div class="container">
-  <div class="official-status" id="official-status">
-    <h1>Official PEAK Status</h1>
-    <div id="official-images"></div>
-    <div class="status-info" id="official-info">Loading official status...</div>
-    <div class="last-updated" id="official-updated"></div>
-  </div>
-
-  <div class="section-divider"></div>
-  <div class="community-voting-header">Community Voting (Your Input)</div>
-
-  <div class="voting-section">
-    <div class="vote-card">
-      <h2>Today's Biome</h2>
-      <div class="voting-buttons">
-        <button class="vote-btn mesa" onclick="vote('biome','mesa')" id="mesa-btn">Mesa</button>
-        <button class="vote-btn alpine" onclick="vote('biome','alpine')" id="alpine-btn">Alpine</button>
-      </div>
-      <div class="results">
-        <div class="result-item"><span class="result-label">Mesa</span><span class="result-count" id="mesa-count">-</span></div>
-        <div class="result-item"><span class="result-label">Alpine</span><span class="result-count" id="alpine-count">-</span></div>
-      </div>
-    </div>
-
-    <div class="vote-card">
-      <h2>Is the Tomb Open?</h2>
-      <div class="voting-buttons">
-        <button class="vote-btn yes" onclick="vote('tomb','yes')" id="yes-btn">Yes</button>
-        <button class="vote-btn no" onclick="vote('tomb','no')" id="no-btn">No</button>
-      </div>
-      <div class="results">
-        <div class="result-item"><span class="result-label">Yes</span><span class="result-count" id="yes-count">-</span></div>
-        <div class="result-item"><span class="result-label">No</span><span class="result-count" id="no-count">-</span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="current-status" id="status"><div class="loading">Loading community votes...</div></div>
+<div class="official-status" id="official-status">
+  <h1>Official PEAK Status</h1>
+  <div id="official-images"></div>
+  <div class="status-info" id="official-info">Loading official status...</div>
+  <div class="last-updated" id="official-updated"></div>
 </div>
 
+<div class="section-divider"></div>
+<div class="community-voting-header">Community Voting (Your Input)</div>
+
+<div class="voting-section">
+  <div class="vote-card">
+    <h2>Today's Biome</h2>
+    <div class="voting-buttons">
+      <button class="vote-btn mesa" onclick="vote('biome','mesa')" id="mesa-btn">Mesa</button>
+      <button class="vote-btn alpine" onclick="vote('biome','alpine')" id="alpine-btn">Alpine</button>
+    </div>
+    <div class="results">
+      <div class="result-item"><span class="result-label">Mesa</span><span class="result-count" id="mesa-count">-</span></div>
+      <div class="result-item"><span class="result-label">Alpine</span><span class="result-count" id="alpine-count">-</span></div>
+    </div>
+  </div>
+
+  <div class="vote-card">
+    <h2>Is the Tomb Open?</h2>
+    <div class="voting-buttons">
+      <button class="vote-btn yes" onclick="vote('tomb','yes')" id="yes-btn">Yes</button>
+      <button class="vote-btn no" onclick="vote('tomb','no')" id="no-btn">No</button>
+    </div>
+    <div class="results">
+      <div class="result-item"><span class="result-label">Yes</span><span class="result-count" id="yes-count">-</span></div>
+      <div class="result-item"><span class="result-label">No</span><span class="result-count" id="no-count">-</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="current-status" id="status"><div class="loading">Loading community votes...</div></div>
+</div>
+
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
 async function loadOfficialStatus(){
   try {
-    const resp = await fetch('./status.json?ts=' + new Date().getTime());
+    const resp = await fetch('./status.json?ts='+new Date().getTime());
     if(resp.ok) displayOfficialStatus(await resp.json());
     else document.getElementById('official-info').textContent='Official status not available';
-  } catch(e){
+  } catch(e) {
     console.error(e);
     document.getElementById('official-info').textContent='Error loading official status';
   }
 }
 
-function displayOfficialStatus(status) {
+function displayOfficialStatus(status){
   const infoDiv = document.getElementById('official-info');
   const imagesDiv = document.getElementById('official-images');
   const updatedDiv = document.getElementById('official-updated');
 
-  imagesDiv.innerHTML = '';
+  imagesDiv.innerHTML = ''; // clear previous images
 
+  // --- Biome Image ---
   if(status.biomeImage){
     const biomeImg = document.createElement('img');
     biomeImg.src = status.biomeImage;
@@ -109,32 +111,54 @@ function displayOfficialStatus(status) {
     imagesDiv.appendChild(biomeImg);
   }
 
-  if(status.tombImage){
-    const tombImg = document.createElement('img');
-    tombImg.src = status.tombImage;
-    tombImg.alt = status.tomb || 'Tomb';
-    tombImg.height = 64;
-    imagesDiv.appendChild(tombImg);
+  // --- Tomb Image / Emoji ---
+  if(status.tomb==='alpine'){
+    // Alpine tomb uses biome image
+    if(status.biomeImage){
+      const tombImg = document.createElement('img');
+      tombImg.src = status.biomeImage;
+      tombImg.alt = 'Alpine Tomb';
+      tombImg.height = 64;
+      imagesDiv.appendChild(tombImg);
+    }
+  } else {
+    let tombChar = '';
+    switch(status.tomb){
+      case 'yes': tombChar='🟢'; break;
+      case 'partial': tombChar='🟡'; break;
+      case 'glitch': tombChar='🟠'; break;
+      case 'no': tombChar='🔴'; break;
+    }
+    if(tombChar){
+      const tombSpan = document.createElement('span');
+      tombSpan.textContent = tombChar;
+      tombSpan.style.fontSize='64px';
+      tombSpan.style.verticalAlign='middle';
+      imagesDiv.appendChild(tombSpan);
+    }
   }
 
-  const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
+  // --- Text below images ---
+  const biomeText = status.biome ? status.biome.charAt(0).toUpperCase()+status.biome.slice(1) : 'Unknown';
   let tombText = 'Unknown';
   switch(status.tomb){
     case 'yes': tombText='Open'; break;
-    case 'no': tombText='Closed'; break;
     case 'partial': tombText='Partially Open'; break;
     case 'glitch': tombText='Glitch Access Only'; break;
+    case 'no': tombText='Closed'; break;
+    case 'alpine': tombText='Alpine'; break;
   }
   infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
 
+  // --- Last Updated ---
   if(status.lastUpdated){
     const lastUpdatedDate = new Date(status.lastUpdated);
     updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
   }
 }
 
-// ======= COMMUNITY VOTING =======
-window.onload = function(){
+// ======= COMMUNITY VOTING (FIREBASE) =======
+window.onload = function() {
   loadOfficialStatus();
 
   const firebaseConfig = {
@@ -167,46 +191,52 @@ window.onload = function(){
   }
 
   function updateDisplay(votes){
-    document.getElementById('mesa-count').textContent=votes.biome.mesa;
-    document.getElementById('alpine-count').textContent=votes.biome.alpine;
-    document.getElementById('yes-count').textContent=votes.tomb.yes;
-    document.getElementById('no-count').textContent=votes.tomb.no;
+    document.getElementById('mesa-count').textContent = votes.biome.mesa;
+    document.getElementById('alpine-count').textContent = votes.biome.alpine;
+    document.getElementById('yes-count').textContent = votes.tomb.yes;
+    document.getElementById('no-count').textContent = votes.tomb.no;
 
-    const biomeWinner=votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
-    const tombWinner=votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
-    const total=votes.biome.mesa+votes.biome.alpine+votes.tomb.yes+votes.tomb.no;
-    document.getElementById('status').textContent=total===0?'Community consensus: No votes yet today':`Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
+    const biomeWinner = votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
+    const tombWinner = votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
+    const total = votes.biome.mesa+votes.biome.alpine+votes.tomb.yes+votes.tomb.no;
+    document.getElementById('status').textContent = total===0 ?
+      'Community consensus: No votes yet today' :
+      `Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
   }
 
   function initializeVoting(){
-    const today=getTodayString();
-    const docRef=db.collection('daily-votes').doc(today);
+    const today = getTodayString();
+    const docRef = db.collection('daily-votes').doc(today);
+
     docRef.onSnapshot(doc=>{
-      if(doc.exists) updateDisplay(doc.data().votes);
-      else initializeTodayVotes(today);
+      if(doc.exists){
+        updateDisplay(doc.data().votes);
+      } else {
+        initializeTodayVotes(today);
+      }
     });
   }
 
   async function vote(category, option){
     if(userVotes[category]) { alert(`You've already voted ${userVotes[category]} for ${category}!`); return; }
-    const today=getTodayString();
-    const btn=document.getElementById(option+'-btn');
-    try{
+    const today = getTodayString();
+    const btn = document.getElementById(option+'-btn');
+    try {
       btn.disabled=true; btn.textContent='Voting...';
       await db.collection('daily-votes').doc(today).update({
-        [`votes.${category}.${option}`]:firebase.firestore.FieldValue.increment(1),
-        lastUpdated:firebase.firestore.FieldValue.serverTimestamp()
+        [`votes.${category}.${option}`]: firebase.firestore.FieldValue.increment(1),
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
       });
       userVotes[category]=option;
       btn.style.transform='scale(0.95)';
-      setTimeout(()=>{btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);},200);
-    } catch(e){
+      setTimeout(()=>{ btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1); },200);
+    } catch(e) {
       console.error(e); alert('Error submitting vote.'); btn.disabled=false; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
     }
   }
 
   initializeVoting();
-  window.vote=vote;
+  window.vote = vote;
 };
 </script>
 </body>
