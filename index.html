@@ -111,20 +111,23 @@ function displayOfficialStatus(status){
     imagesDiv.appendChild(biomeImg);
   }
 
-  // Tomb emoji
-  let tombChar = '';
-  switch(status.tomb){
-    case 'yes': tombChar='🟢'; break;
-    case 'partial': tombChar='🟡'; break;
-    case 'glitch': tombChar='🟠'; break;
-    case 'no': tombChar='🔴'; break;
-    case 'alpine': tombChar='🟣'; break;
-  }
-  if(tombChar){
-    const tombSpan = document.createElement('span');
-    tombSpan.textContent = tombChar;
-    imagesDiv.appendChild(tombSpan);
-  }
+// Tomb emoji
+let tombChar = '';
+switch(status.tomb){
+  case 'yes': tombChar='🟢'; break;
+  case 'partial': tombChar='🟡'; break;
+  case 'glitch': tombChar='🟠'; break;
+  case 'no': tombChar='🔴'; break;
+  case 'alpine': tombChar='🟣'; break;
+}
+if(tombChar){
+  const tombSpan = document.createElement('span');
+  tombSpan.textContent = tombChar;
+  tombSpan.style.fontSize = '64px';      // force same height as images
+  tombSpan.style.lineHeight = '64px';    // align vertically
+  tombSpan.style.display = 'inline-block';
+  imagesDiv.appendChild(tombSpan);
+}
 
   // Text below
   const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
