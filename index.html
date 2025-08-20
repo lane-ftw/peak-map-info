@@ -94,6 +94,46 @@ async function loadOfficialStatus(){
 }
 
 function displayOfficialStatus(status){
+  const infoDiv = document.getElementById('official-info');
+  infoDiv.innerHTML = ''; // clear previous content
+
+  // Container for images
+  const imagesContainer = document.createElement('div');
+  imagesContainer.style.marginBottom = '10px';
+  imagesContainer.style.display = 'flex';
+  imagesContainer.style.justifyContent = 'center';
+  imagesContainer.style.alignItems = 'center';
+  imagesContainer.style.gap = '10px';
+
+  // Biome image
+  if(status.biomeImage){
+    const biomeImg = document.createElement('img');
+    biomeImg.src = status.biomeImage;
+    biomeImg.alt = 'Biome';
+    biomeImg.style.height = '64px';
+    imagesContainer.appendChild(biomeImg);
+  }
+
+  // Tomb image or emoji
+  if(status.tombImage){
+    if(status.tombImage.startsWith('http')){
+      const tombImg = document.createElement('img');
+      tombImg.src = status.tombImage;
+      tombImg.alt = 'Tomb';
+      tombImg.style.height = '64px';
+      imagesContainer.appendChild(tombImg);
+    } else {
+      const tombSpan = document.createElement('span');
+      tombSpan.textContent = status.tombImage; // emoji for mesa tomb
+      tombSpan.style.fontSize = '2rem';
+      tombSpan.style.verticalAlign = 'middle';
+      imagesContainer.appendChild(tombSpan);
+    }
+  }
+
+  infoDiv.appendChild(imagesContainer);
+
+  // Text below images
   const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
   let tombText = 'Unknown';
   if(status.tomb==='yes') tombText='Open';
@@ -101,19 +141,34 @@ function displayOfficialStatus(status){
   else if(status.tomb==='partial') tombText='Partially Open';
   else if(status.tomb==='glitch') tombText='Glitch Access Only';
 
-  document.getElementById('official-info').textContent = `${biomeText} | Tomb ${tombText}`;
+  const textDiv = document.createElement('div');
+  textDiv.textContent = `${biomeText} | Tomb ${tombText}`;
+  infoDiv.appendChild(textDiv);
 
+  // Last updated timestamp
   if(status.lastUpdated){
     let lastUpdatedDate;
     if(status.lastUpdated.toDate){
       lastUpdatedDate = status.lastUpdated.toDate(); // Firestore timestamp
     } else {
-      lastUpdatedDate = new Date(status.lastUpdated); // plain JSON
+      lastUpdatedDate = new Date(status.lastUpdated);
     }
     document.getElementById('official-updated').textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
   }
 }
 
+
+  // Optional: show last updated timestamp
+  if(status.lastUpdated){
+    let lastUpdatedDate;
+    if(status.lastUpdated.toDate){
+      lastUpdatedDate = status.lastUpdated.toDate(); // Firestore timestamp
+    } else {
+      lastUpdatedDate = new Date(status.lastUpdated);
+    }
+    document.getElementById('official-updated').textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
+  }
+}
 // ======= COMMUNITY VOTING (FIREBASE) =======
 window.onload = function() {
   // Load official status first
