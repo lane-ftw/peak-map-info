@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PEAK Map Info</title>
 <style>
+/* your existing styles... */
 * {margin:0;padding:0;box-sizing:border-box;}
 body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%); min-height:100vh; padding:20px; color:#e0e0e0;}
 .container {max-width:800px; margin:0 auto; background:#2a2a2a; border-radius:15px; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden; border:1px solid #404040;}
 .official-status {background:linear-gradient(135deg,#4a90e2 0%,#357abd 100%); padding:25px; text-align:center; border-bottom:3px solid #2c5aa0;}
 .official-status h1 {font-size:1.5rem; margin-bottom:10px; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.3);}
-.official-status .status-images {margin-bottom:10px;}
-.official-status .status-images img {margin:0 5px; vertical-align:middle;}
-.official-status .status-info {font-size:1.2rem; font-weight:600; color:#f0f8ff; text-shadow:0 1px 2px rgba(0,0,0,0.2);}
-.official-status .last-updated {font-size:0.9rem; margin-top:8px; color:rgba(255,255,255,0.8);}
+.status-info {font-size:1.2rem; font-weight:600; color:#f0f8ff; text-shadow:0 1px 2px rgba(0,0,0,0.2);}
+#official-images {margin:10px 0; text-align:center;}
+.last-updated {font-size:0.9rem; margin-top:8px; color:rgba(255,255,255,0.8);}
 .voting-section {padding:40px; display:grid; grid-template-columns:1fr 1fr; gap:40px;}
 .vote-card {background:#1e1e1e; border-radius:12px; padding:30px; border:2px solid #404040; transition:all 0.3s ease;}
 .vote-card:hover {transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.4);}
@@ -35,16 +35,15 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 .loading {text-align:center; padding:20px; color:#999;}
 .section-divider {height:2px; background:linear-gradient(90deg,transparent,#404040,transparent); margin:0 20px;}
 .community-voting-header {text-align:center; padding:20px; color:#b0b0b0; font-size:1.1rem;}
-@media(max-width:768px){.voting-section{grid-template-columns:1fr; gap:30px; padding:20px;} .official-status h1{font-size:1.2rem;} .official-status .status-info{font-size:1rem;}}
+@media(max-width:768px){.voting-section{grid-template-columns:1fr; gap:30px; padding:20px;} .official-status h1{font-size:1.2rem;} .status-info{font-size:1rem;}}
 </style>
 </head>
 <body>
 <div class="container">
   <div class="official-status" id="official-status">
     <h1>Official PEAK Status</h1>
-    <div class="status-images" id="official-images"></div>
     <div class="status-info" id="official-info">Loading official status...</div>
-    <div id="official-images" style="text-align:center; margin:10px 0;"></div>
+    <div id="official-images"></div>
     <div class="last-updated" id="official-updated"></div>
   </div>
 
@@ -85,22 +84,19 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-window.onload = function(){
-  const userVotes = {biome:null, tomb:null};
-
-  // ======= OFFICIAL STATUS =======
-  async function loadOfficialStatus(){
-    try{
-      const resp = await fetch('./status.json');
-      if(resp.ok) displayOfficialStatus(await resp.json());
-      else document.getElementById('official-info').textContent='Official status not available';
-    } catch(e){
-      console.error(e);
-      document.getElementById('official-info').textContent='Error loading official status';
-    }
+// ======= OFFICIAL STATUS (WORKING) =======
+async function loadOfficialStatus(){
+  try {
+    const resp = await fetch('./status.json?ts=' + new Date().getTime());
+    if(resp.ok) displayOfficialStatus(await resp.json());
+    else document.getElementById('official-info').textContent='Official status not available';
+  } catch(e){
+    console.error(e);
+    document.getElementById('official-info').textContent='Error loading official status';
   }
+}
 
-  function displayOfficialStatus(status) {
+function displayOfficialStatus(status) {
   const infoDiv = document.getElementById('official-info');
   const imagesDiv = document.getElementById('official-images');
   const updatedDiv = document.getElementById('official-updated');
@@ -154,41 +150,10 @@ window.onload = function(){
   }
 }
 
-    infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
+// ======= COMMUNITY VOTING (FIREBASE) =======
+window.onload = function() {
+  loadOfficialStatus();
 
-    // -----------------------------
-    // Last Updated
-    // -----------------------------
-    const updatedDiv = document.getElementById('official-updated');
-    if (status.lastUpdated) {
-      const lastUpdatedDate = new Date(status.lastUpdated);
-      updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
-    }
-  } catch (e) {
-    console.error('Error displaying official status:', e);
-  }
-}
-
-
-      // Text info
-      const biomeText = status.biome ? status.biome.charAt(0).toUpperCase()+status.biome.slice(1) : 'Unknown';
-      let tombText='Unknown';
-      if(status.tomb==='yes') tombText='Open';
-      else if(status.tomb==='no') tombText='Closed';
-      else if(status.tomb==='partial') tombText='Partially Open';
-      else if(status.tomb==='glitch') tombText='Glitch Access Only';
-      infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
-
-      // Last updated
-      const updatedDiv = document.getElementById('official-updated');
-      if(status.lastUpdated){
-        const lastUpdatedDate = new Date(status.lastUpdated);
-        updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
-      }
-    } catch(e){ console.error('Error displaying official status:', e);}
-  }
-
-  // ======= COMMUNITY VOTING =======
   const firebaseConfig = {
     apiKey: "AIzaSyAtK5L-nubV-_i-gEgnP2_gzLi31IGl0zg",
     authDomain: "peak-map-vote.firebaseapp.com",
@@ -199,17 +164,18 @@ window.onload = function(){
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+  let userVotes = {biome:null, tomb:null};
 
-  function getTodayString(){
+  function getTodayString() {
     const now = new Date();
     const utcHour = now.getUTCHours();
     const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-    if(utcHour<18) utcDate.setUTCDate(utcDate.getUTCDate()-1);
+    if (utcHour < 18) utcDate.setUTCDate(utcDate.getUTCDate() - 1);
     return utcDate.toISOString().split('T')[0];
   }
 
   async function initializeTodayVotes(today){
-    const init = {biome:{mesa:0, alpine:0}, tomb:{yes:0,no:0}};
+    const init = {biome:{mesa:0, alpine:0}, tomb:{yes:0, no:0}};
     await db.collection('daily-votes').doc(today).set({
       votes:init,
       date:today,
@@ -218,31 +184,37 @@ window.onload = function(){
   }
 
   function updateDisplay(votes){
-    document.getElementById('mesa-count').textContent=votes.biome.mesa;
-    document.getElementById('alpine-count').textContent=votes.biome.alpine;
-    document.getElementById('yes-count').textContent=votes.tomb.yes;
-    document.getElementById('no-count').textContent=votes.tomb.no;
+    document.getElementById('mesa-count').textContent = votes.biome.mesa;
+    document.getElementById('alpine-count').textContent = votes.biome.alpine;
+    document.getElementById('yes-count').textContent = votes.tomb.yes;
+    document.getElementById('no-count').textContent = votes.tomb.no;
 
-    const biomeWinner=votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
-    const tombWinner=votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
-    const total=votes.biome.mesa+votes.biome.alpine+votes.tomb.yes+votes.tomb.no;
-    document.getElementById('status').textContent=total===0?'Community consensus: No votes yet today':`Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
+    const biomeWinner = votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
+    const tombWinner = votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
+    const total = votes.biome.mesa + votes.biome.alpine + votes.tomb.yes + votes.tomb.no;
+    document.getElementById('status').textContent = total===0 ?
+      'Community consensus: No votes yet today' :
+      `Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
   }
 
   function initializeVoting(){
-    const today=getTodayString();
-    const docRef=db.collection('daily-votes').doc(today);
+    const today = getTodayString();
+    const docRef = db.collection('daily-votes').doc(today);
+
     docRef.onSnapshot(doc=>{
-      if(doc.exists) updateDisplay(doc.data().votes);
-      else initializeTodayVotes(today);
+      if(doc.exists){
+        updateDisplay(doc.data().votes);
+      } else {
+        initializeTodayVotes(today);
+      }
     });
   }
 
   async function vote(category, option){
     if(userVotes[category]) { alert(`You've already voted ${userVotes[category]} for ${category}!`); return; }
-    const today=getTodayString();
-    const btn=document.getElementById(option+'-btn');
-    try{
+    const today = getTodayString();
+    const btn = document.getElementById(option+'-btn');
+    try {
       btn.disabled=true; btn.textContent='Voting...';
       await db.collection('daily-votes').doc(today).update({
         [`votes.${category}.${option}`]: firebase.firestore.FieldValue.increment(1),
@@ -251,15 +223,13 @@ window.onload = function(){
       userVotes[category]=option;
       btn.style.transform='scale(0.95)';
       setTimeout(()=>{ btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1); },200);
-    } catch(e){
+    } catch(e) {
       console.error(e); alert('Error submitting vote.'); btn.disabled=false; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
     }
   }
 
-  // Start
-  loadOfficialStatus();
   initializeVoting();
-  window.vote=vote; // make vote accessible for onclick
+  window.vote = vote;
 };
 </script>
 </body>
