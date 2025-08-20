@@ -85,14 +85,39 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 
 <script>
 // ======= OFFICIAL STATUS (WORKING) =======
-async function loadOfficialStatus(){
+async function loadOfficialStatus() {
   try {
     const resp = await fetch('./status.json?ts=' + new Date().getTime());
-    if(resp.ok) displayOfficialStatus(await resp.json());
-    else document.getElementById('official-info').textContent='Official status not available';
-  } catch(e){
+    if (resp.ok) {
+      const status = await resp.json();
+      displayOfficialStatus(status); // your existing text logic stays
+      // --- Inject images above text ---
+      const imagesDiv = document.getElementById('official-images');
+      imagesDiv.innerHTML = '';
+      if (status.biomeImage) {
+        const biomeImg = document.createElement('img');
+        biomeImg.src = status.biomeImage;
+        biomeImg.height = 54;
+        biomeImg.style.marginRight = '5px';
+        imagesDiv.appendChild(biomeImg);
+      }
+      if (status.tombImage) {
+        const tombEl = document.createElement(status.tombImage.startsWith('http') ? 'img' : 'span');
+        if (tombEl.tagName === 'IMG') {
+          tombEl.src = status.tombImage;
+          tombEl.height = 54;
+        } else {
+          tombEl.textContent = status.tombImage;
+          tombEl.style.fontSize = '54px';
+        }
+        imagesDiv.appendChild(tombEl);
+      }
+    } else {
+      document.getElementById('official-info').textContent = 'Official status not available';
+    }
+  } catch (e) {
     console.error(e);
-    document.getElementById('official-info').textContent='Error loading official status';
+    document.getElementById('official-info').textContent = 'Error loading official status';
   }
 }
 
