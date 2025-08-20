@@ -76,10 +76,50 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
   <div class="current-status" id="status"><div class="loading">Loading community votes...</div></div>
 </div>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
 <script>
+// ======= OFFICIAL STATUS (WORKING) =======
+async function loadOfficialStatus(){
+  try {
+    const resp = await fetch('./status.json');
+    if(resp.ok) displayOfficialStatus(await resp.json());
+    else document.getElementById('official-info').textContent='Official status not available';
+  } catch(e){
+    console.error(e);
+    document.getElementById('official-info').textContent='Error loading official status';
+  }
+}
+
+function displayOfficialStatus(status){
+  const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
+  let tombText = 'Unknown';
+  if(status.tomb==='yes') tombText='Open';
+  else if(status.tomb==='no') tombText='Closed';
+  else if(status.tomb==='partial') tombText='Partially Open';
+  else if(status.tomb==='glitch') tombText='Glitch Access Only';
+
+  document.getElementById('official-info').textContent = `${biomeText} | Tomb ${tombText}`;
+
+  if(status.lastUpdated){
+    let lastUpdatedDate;
+    if(status.lastUpdated.toDate){
+      lastUpdatedDate = status.lastUpdated.toDate(); // Firestore timestamp
+    } else {
+      lastUpdatedDate = new Date(status.lastUpdated); // plain JSON
+    }
+    document.getElementById('official-updated').textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
+  }
+}
+
+// ======= COMMUNITY VOTING (FIREBASE) =======
 window.onload = function() {
+  // Load official status first
+  loadOfficialStatus();
+
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyAtK5L-nubV-_i-gEgnP2_gzLi31IGl0zg",
     authDomain: "peak-map-vote.firebaseapp.com",
@@ -154,40 +194,10 @@ window.onload = function() {
     }
   }
 
-  async function loadOfficialStatus(){
-    try {
-      const resp = await fetch('./status.json');
-      if(resp.ok) displayOfficialStatus(await resp.json());
-      else document.getElementById('official-info').textContent='Official status not available';
-    } catch(e){ console.error(e); document.getElementById('official-info').textContent='Error loading official status'; }
-  }
-function displayOfficialStatus(status){
-    const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
-    let tombText = 'Unknown';
-    if(status.tomb==='yes') tombText='Open';
-    else if(status.tomb==='no') tombText='Closed';
-    else if(status.tomb==='partial') tombText='Partially Open';
-    else if(status.tomb==='glitch') tombText='Glitch Access Only';
-
-    document.getElementById('official-info').textContent = `${biomeText} | Tomb ${tombText}`;
-
-    if(status.lastUpdated){
-        let lastUpdatedDate;
-        if(status.lastUpdated.toDate) {
-            // Firestore Timestamp object
-            lastUpdatedDate = status.lastUpdated.toDate();
-        } else {
-            // plain ISO string from JSON
-            lastUpdatedDate = new Date(status.lastUpdated);
-        }
-        document.getElementById('official-updated').textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
-    }
-}
-
-  loadOfficialStatus();
+  // Start Firebase voting
   initializeVoting();
 
-  // expose vote function globally for buttons
+  // Expose vote function globally
   window.vote = vote;
 };
 </script>
