@@ -40,6 +40,8 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 <div class="container">
   <div class="official-status" id="official-status">
     <h1>Official PEAK Status</h1>
+    <!-- NEW IMAGE CONTAINER -->
+    <div id="official-images" style="text-align:center; margin-bottom:10px;"></div>
     <div class="status-info" id="official-info">Loading official status...</div>
     <div class="last-updated" id="official-updated"></div>
   </div>
@@ -81,7 +83,7 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-// ======= OFFICIAL STATUS (WORKING) =======
+// ======= OFFICIAL STATUS (WORKING + IMAGES) =======
 async function loadOfficialStatus(){
   try {
     const resp = await fetch('./status.json');
@@ -94,16 +96,9 @@ async function loadOfficialStatus(){
 }
 
 function displayOfficialStatus(status){
-  const infoDiv = document.getElementById('official-info');
-  infoDiv.innerHTML = ''; // clear old content inside this div
-
   // === Images container ===
-  const imagesContainer = document.createElement('div');
-  imagesContainer.style.display = 'flex';
-  imagesContainer.style.justifyContent = 'center';
-  imagesContainer.style.alignItems = 'center';
-  imagesContainer.style.gap = '10px';
-  imagesContainer.style.marginBottom = '10px';
+  const imagesDiv = document.getElementById('official-images');
+  imagesDiv.innerHTML = ''; // clear previous images
 
   // Biome image
   if(status.biomeImage){
@@ -111,7 +106,8 @@ function displayOfficialStatus(status){
     biomeImg.src = status.biomeImage;
     biomeImg.alt = 'Biome';
     biomeImg.style.height = '64px';
-    imagesContainer.appendChild(biomeImg);
+    biomeImg.style.marginRight = '10px';
+    imagesDiv.appendChild(biomeImg);
   }
 
   // Tomb image or emoji
@@ -121,19 +117,18 @@ function displayOfficialStatus(status){
       tombImg.src = status.tombImage;
       tombImg.alt = 'Tomb';
       tombImg.style.height = '64px';
-      imagesContainer.appendChild(tombImg);
+      imagesDiv.appendChild(tombImg);
     } else {
       const tombSpan = document.createElement('span');
       tombSpan.textContent = status.tombImage; // emoji for mesa tomb
       tombSpan.style.fontSize = '2rem';
       tombSpan.style.verticalAlign = 'middle';
-      imagesContainer.appendChild(tombSpan);
+      imagesDiv.appendChild(tombSpan);
     }
   }
 
-  infoDiv.appendChild(imagesContainer);
-
   // === Text below images ===
+  const infoDiv = document.getElementById('official-info');
   const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
   let tombText = 'Unknown';
   if(status.tomb==='yes') tombText='Open';
@@ -141,12 +136,9 @@ function displayOfficialStatus(status){
   else if(status.tomb==='partial') tombText='Partially Open';
   else if(status.tomb==='glitch') tombText='Glitch Access Only';
 
-  const textDiv = document.createElement('div');
-  textDiv.textContent = `${biomeText} | Tomb ${tombText}`;
-  textDiv.style.textAlign = 'center';
-  infoDiv.appendChild(textDiv);
+  infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
 
-  // === Last updated timestamp ===
+  // Last updated timestamp
   if(status.lastUpdated){
     let lastUpdatedDate;
     if(status.lastUpdated.toDate){
@@ -158,43 +150,6 @@ function displayOfficialStatus(status){
   }
 }
 
-
-  // Text below images
-  const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
-  let tombText = 'Unknown';
-  if(status.tomb==='yes') tombText='Open';
-  else if(status.tomb==='no') tombText='Closed';
-  else if(status.tomb==='partial') tombText='Partially Open';
-  else if(status.tomb==='glitch') tombText='Glitch Access Only';
-
-  const textDiv = document.createElement('div');
-  textDiv.textContent = `${biomeText} | Tomb ${tombText}`;
-  infoDiv.appendChild(textDiv);
-
-  // Last updated timestamp
-  if(status.lastUpdated){
-    let lastUpdatedDate;
-    if(status.lastUpdated.toDate){
-      lastUpdatedDate = status.lastUpdated.toDate(); // Firestore timestamp
-    } else {
-      lastUpdatedDate = new Date(status.lastUpdated);
-    }
-    document.getElementById('official-updated').textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
-  }
-}
-
-
-  // Optional: show last updated timestamp
-  if(status.lastUpdated){
-    let lastUpdatedDate;
-    if(status.lastUpdated.toDate){
-      lastUpdatedDate = status.lastUpdated.toDate(); // Firestore timestamp
-    } else {
-      lastUpdatedDate = new Date(status.lastUpdated);
-    }
-    document.getElementById('official-updated').textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
-  }
-}
 // ======= COMMUNITY VOTING (FIREBASE) =======
 window.onload = function() {
   // Load official status first
