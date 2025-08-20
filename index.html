@@ -116,27 +116,27 @@ async function vote(category, option){
     const todayDoc = db.collection('daily-votes').doc(today);
     const docSnap = await todayDoc.get();
 
-    if(docSnap.exists) {
-      // Update the votes map manually
-      const votes = docSnap.data().votes;
-      votes[category][option] += 1;
-
-      await todayDoc.set({
-        votes: votes,
-        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      userVotes[category] = option;
-      btn.style.transform='scale(0.95)';
-      setTimeout(()=>{
-        btn.style.transform='';
-        btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
-      },200);
-    } else {
-      alert('Voting document for today does not exist.');
-      btn.disabled = false;
-      btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
+    if(!docSnap.exists){
+      // Initialize today's votes if missing
+      const init = {biome:{mesa:0, alpine:0}, tomb:{yes:0, no:0}};
+      await todayDoc.set({votes:init, lastUpdated:firebase.firestore.FieldValue.serverTimestamp()});
     }
+
+    // Read, increment locally, write back
+    const votes = (await todayDoc.get()).data().votes;
+    votes[category][option] += 1;
+
+    await todayDoc.set({
+      votes: votes,
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    userVotes[category] = option;
+    btn.style.transform='scale(0.95)';
+    setTimeout(()=>{
+      btn.style.transform='';
+      btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
+    },200);
 
   } catch(e){
     console.error(e);
@@ -145,6 +145,7 @@ async function vote(category, option){
     btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
   }
 }
+
   
 // Update UI counts
 function updateDisplay(votes){
