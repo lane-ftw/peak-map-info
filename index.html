@@ -115,32 +115,27 @@ async function vote(category, option) {
     btn.textContent = 'Voting...';
 
     const docRef = db.collection('daily-votes').doc(today);
-    const docSnap = await docRef.get();
 
-    if (docSnap.exists) {
-      // Read current votes map
-      let votes = docSnap.data().votes;
+    await db.runTransaction(async (transaction) => {
+      const docSnap = await transaction.get(docRef);
+      if (!docSnap.exists) throw "Today's vote document is missing";
 
-      // Increment the correct nested value
+      const votes = docSnap.data().votes;
       votes[category][option] += 1;
 
-      // Update only top-level 'votes' and 'lastUpdated'
-      await docRef.update({
+      transaction.update(docRef, {
         votes: votes,
         lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
       });
+    });
 
-      userVotes[category] = option;
-      btn.style.transform = 'scale(0.95)';
-      setTimeout(() => {
-        btn.style.transform = '';
-        btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
-      }, 200);
-    } else {
-      alert("Today's vote document is missing.");
-      btn.disabled = false;
+    userVotes[category] = option;
+    btn.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      btn.style.transform = '';
       btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
-    }
+    }, 200);
+
   } catch (e) {
     console.error(e);
     alert('Error submitting vote.');
