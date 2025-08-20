@@ -96,7 +96,6 @@ function getTodayString() {
   const now = new Date();
   const utcHour = now.getUTCHours();
   const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-  // If before 18:00 UTC, use previous day
   if (utcHour < 18) utcDate.setUTCDate(utcDate.getUTCDate() - 1);
   return utcDate.toISOString().split('T')[0];
 }
@@ -118,21 +117,38 @@ async function initializeTodayVotes(today){
   await db.collection('daily-votes').doc(today).set({votes:init, date:today, lastUpdated:firebase.firestore.FieldValue.serverTimestamp()});
 }
 
-// Cast vote
+// Cast vote (secure with merge)
 async function vote(category, option){
-  if(userVotes[category]) {alert(`You've already voted ${userVotes[category]} for ${category}!`); return;}
+  if(userVotes[category]) {
+    alert(`You've already voted ${userVotes[category]} for ${category}!`);
+    return;
+  }
   const today = getTodayString();
   const btn = document.getElementById(option+'-btn');
-  try{
-    btn.disabled=true; btn.textContent='Voting...';
-    await db.collection('daily-votes').doc(today).update({
-      [`votes.${category}.${option}`]: firebase.firestore.FieldValue.increment(1),
-      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    userVotes[category]=option;
-    btn.style.transform='scale(0.95)';
-    setTimeout(()=>{btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);},200);
-  }catch(e){console.error(e); alert('Error submitting vote.'); btn.disabled=false; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);}
+
+  try {
+    btn.disabled = true;
+    btn.textContent = 'Voting...';
+
+    const voteUpdate = {};
+    voteUpdate[`votes.${category}.${option}`] = firebase.firestore.FieldValue.increment(1);
+    voteUpdate['lastUpdated'] = firebase.firestore.FieldValue.serverTimestamp();
+
+    await db.collection('daily-votes').doc(today).set(voteUpdate, { merge: true });
+
+    userVotes[category] = option;
+    btn.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      btn.style.transform = '';
+      btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
+    }, 200);
+
+  } catch(e) {
+    console.error(e);
+    alert('Error submitting vote.');
+    btn.disabled = false;
+    btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
+  }
 }
 
 // Update UI counts
