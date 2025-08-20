@@ -103,7 +103,7 @@ function displayOfficialStatus(status) {
 
   imagesDiv.innerHTML = ''; // clear previous images
 
-  // Biome image
+  // --- Biome Image ---
   if (status.biomeImage) {
     const biomeImg = document.createElement('img');
     biomeImg.src = status.biomeImage;
@@ -113,7 +113,7 @@ function displayOfficialStatus(status) {
     imagesDiv.appendChild(biomeImg);
   }
 
-  // Tomb image or emoji
+  // --- Tomb Image / Emoji ---
   if (status.tombImage) {
     if (status.tombImage.startsWith('http')) {
       const tombImg = document.createElement('img');
@@ -129,6 +129,40 @@ function displayOfficialStatus(status) {
       imagesDiv.appendChild(tombSpan);
     }
   }
+
+  // --- Text Below Images ---
+  const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
+
+  // Map tomb (emoji or string) to text
+  let tombText = 'Unknown';
+  switch (status.tomb) {
+    case '🟢':
+    case 'yes':
+      tombText = 'Open';
+      break;
+    case '🔴':
+    case 'no':
+      tombText = 'Closed';
+      break;
+    case '🟡':
+    case 'partial':
+      tombText = 'Partially Open';
+      break;
+    case '🟠':
+    case 'glitch':
+      tombText = 'Glitch Access Only';
+      break;
+  }
+
+  infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
+
+  // --- Last Updated ---
+  if (status.lastUpdated) {
+    const lastUpdatedDate = new Date(status.lastUpdated);
+    updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
+  }
+}
+
 
   // Text below images
   const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
