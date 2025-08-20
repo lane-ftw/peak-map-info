@@ -82,14 +82,14 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-async function loadOfficialStatus() {
+async function loadOfficialStatus(){
   try {
     const resp = await fetch('./status.json?ts=' + new Date().getTime());
     if(resp.ok) displayOfficialStatus(await resp.json());
-    else document.getElementById('official-info').textContent = 'Official status not available';
-  } catch(e) {
+    else document.getElementById('official-info').textContent='Official status not available';
+  } catch(e){
     console.error(e);
-    document.getElementById('official-info').textContent = 'Error loading official status';
+    document.getElementById('official-info').textContent='Error loading official status';
   }
 }
 
@@ -97,10 +97,10 @@ function displayOfficialStatus(status) {
   const infoDiv = document.getElementById('official-info');
   const imagesDiv = document.getElementById('official-images');
   const updatedDiv = document.getElementById('official-updated');
+
   imagesDiv.innerHTML = '';
 
-  // Biome image
-  if(status.biomeImage) {
+  if(status.biomeImage){
     const biomeImg = document.createElement('img');
     biomeImg.src = status.biomeImage;
     biomeImg.alt = status.biome || 'Biome';
@@ -109,47 +109,32 @@ function displayOfficialStatus(status) {
     imagesDiv.appendChild(biomeImg);
   }
 
-  // Tomb image or emoji
-  if(status.tombImage) {
-    if(status.tombImage.startsWith('http')) {
-      const tombImg = document.createElement('img');
-      tombImg.src = status.tombImage;
-      tombImg.alt = status.tomb || 'Tomb';
-      tombImg.height = 64;
-      tombImg.style.verticalAlign = 'middle';
-      imagesDiv.appendChild(tombImg);
-    } else {
-      const tombSpan = document.createElement('span');
-      tombSpan.textContent = status.tombImage;
-      tombSpan.style.fontSize = '64px';
-      tombSpan.style.verticalAlign = 'middle';
-      imagesDiv.appendChild(tombSpan);
-    }
+  if(status.tombImage){
+    const tombImg = document.createElement('img');
+    tombImg.src = status.tombImage;
+    tombImg.alt = status.tomb || 'Tomb';
+    tombImg.height = 64;
+    imagesDiv.appendChild(tombImg);
   }
 
-  // Text below images
   const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
   let tombText = 'Unknown';
-  switch(status.tomb) {
-    case 'yes':
-    case '🟢': tombText='Open'; break;
-    case 'no':
-    case '🔴': tombText='Closed'; break;
-    case 'partial':
-    case '🟡': tombText='Partially Open'; break;
-    case 'glitch':
-    case '🟠': tombText='Glitch Access Only'; break;
+  switch(status.tomb){
+    case 'yes': tombText='Open'; break;
+    case 'no': tombText='Closed'; break;
+    case 'partial': tombText='Partially Open'; break;
+    case 'glitch': tombText='Glitch Access Only'; break;
   }
   infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
 
-  if(status.lastUpdated) {
+  if(status.lastUpdated){
     const lastUpdatedDate = new Date(status.lastUpdated);
     updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
   }
 }
 
-// ===== Firebase Voting =====
-window.onload = function() {
+// ======= COMMUNITY VOTING =======
+window.onload = function(){
   loadOfficialStatus();
 
   const firebaseConfig = {
@@ -162,9 +147,9 @@ window.onload = function() {
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-  let userVotes = {biome:null,tomb:null};
+  let userVotes = {biome:null, tomb:null};
 
-  function getTodayString() {
+  function getTodayString(){
     const now = new Date();
     const utcHour = now.getUTCHours();
     const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
@@ -173,7 +158,7 @@ window.onload = function() {
   }
 
   async function initializeTodayVotes(today){
-    const init = {biome:{mesa:0,alpine:0},tomb:{yes:0,no:0}};
+    const init = {biome:{mesa:0, alpine:0}, tomb:{yes:0, no:0}};
     await db.collection('daily-votes').doc(today).set({
       votes:init,
       date:today,
@@ -187,37 +172,36 @@ window.onload = function() {
     document.getElementById('yes-count').textContent=votes.tomb.yes;
     document.getElementById('no-count').textContent=votes.tomb.no;
 
-    const biomeWinner = votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
-    const tombWinner = votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
+    const biomeWinner=votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
+    const tombWinner=votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
     const total=votes.biome.mesa+votes.biome.alpine+votes.tomb.yes+votes.tomb.no;
-    document.getElementById('status').textContent = total===0?'Community consensus: No votes yet today':`Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
+    document.getElementById('status').textContent=total===0?'Community consensus: No votes yet today':`Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
   }
 
   function initializeVoting(){
     const today=getTodayString();
     const docRef=db.collection('daily-votes').doc(today);
     docRef.onSnapshot(doc=>{
-      if(doc.exists){updateDisplay(doc.data().votes);}
-      else{initializeTodayVotes(today);}
+      if(doc.exists) updateDisplay(doc.data().votes);
+      else initializeTodayVotes(today);
     });
   }
 
   async function vote(category, option){
-    if(userVotes[category]){alert(`You've already voted ${userVotes[category]} for ${category}!`);return;}
+    if(userVotes[category]) { alert(`You've already voted ${userVotes[category]} for ${category}!`); return; }
     const today=getTodayString();
     const btn=document.getElementById(option+'-btn');
     try{
       btn.disabled=true; btn.textContent='Voting...';
       await db.collection('daily-votes').doc(today).update({
-        [`votes.${category}.${option}`]: firebase.firestore.FieldValue.increment(1),
-        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        [`votes.${category}.${option}`]:firebase.firestore.FieldValue.increment(1),
+        lastUpdated:firebase.firestore.FieldValue.serverTimestamp()
       });
       userVotes[category]=option;
       btn.style.transform='scale(0.95)';
       setTimeout(()=>{btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);},200);
-    }catch(e){
-      console.error(e); alert('Error submitting vote.');
-      btn.disabled=false; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
+    } catch(e){
+      console.error(e); alert('Error submitting vote.'); btn.disabled=false; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
     }
   }
 
