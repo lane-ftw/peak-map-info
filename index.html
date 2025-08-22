@@ -205,23 +205,43 @@ window.onload = function(){
     });
   }
 
-  async function vote(category,option){
-    if(userVotes[category]){ alert(`You've already voted ${userVotes[category]} for ${category}!`); return; }
-    const today=getTodayString();
-    const btn=document.getElementById(option+'-btn');
-    try{
-      btn.disabled=true; btn.textContent='Voting...';
-      await db.collection('daily-votes').doc(today).update({
-        [`votes.${category}.${option}`]: firebase.firestore.FieldValue.increment(1),
-        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      userVotes[category]=option;
-      btn.style.transform='scale(0.95)';
-      setTimeout(()=>{ btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1); },200);
-    } catch(e){
-      console.error(e); alert('Error submitting vote.'); btn.disabled=false; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
-    }
+async function vote(category, option) {
+  if (userVotes[category]) {
+    alert(`You've already voted ${userVotes[category]} for ${category}!`);
+    return;
   }
+
+  const today = getTodayString();
+  const btn = document.getElementById(option + '-btn');
+
+  try {
+    btn.disabled = true;
+    btn.textContent = 'Voting...';
+
+    await db.collection('daily-votes').doc(today).set({
+      votes: {
+        [category]: {
+          [option]: firebase.firestore.FieldValue.increment(1)
+        }
+      },
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }); // 👈 ensures votes stays a map
+
+    userVotes[category] = option;
+    btn.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      btn.style.transform = '';
+      btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
+    }, 200);
+
+  } catch (e) {
+    console.error(e);
+    alert('Error submitting vote.');
+    btn.disabled = false;
+    btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
+  }
+}
+
 
   initializeVoting();
   window.vote=vote;
