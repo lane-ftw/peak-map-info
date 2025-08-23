@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PEAK Map Info</title>
 <style>
+/* your CSS unchanged */
 * {margin:0;padding:0;box-sizing:border-box;}
 body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%); min-height:100vh; padding:20px; color:#e0e0e0;}
 .container {max-width:800px; margin:0 auto; background:#2a2a2a; border-radius:15px; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden; border:1px solid #404040;}
@@ -73,15 +74,15 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
   <!-- FAQ Button -->
   <div style="margin:20px;">
     <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">FAQ / Info</button>
-<div class="faq-content">
-  <p><a href="https://discord.com/channels/1368870708335083650/1397665010141892758" target="_blank" rel="noopener noreferrer">Nilla's Daily Guides!</a></p>
-  <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612" target="_blank" rel="noopener noreferrer">5ome's Achievement Guide</a></p>
-  <p>🟢 <strong>Yes:</strong> The tomb is fully open, no bugs or glitches required</p>
-  <p>🟡 <strong>Yes but:</strong> The tomb is open, but some part of it (most likely the maze) is blocked off</p>
-  <p>🟠 <strong>Sorta:</strong> The tomb is closed, but a bug in the terrain allows you to jump in it</p>
-  <p>🔴 <strong>No:</strong> The tomb is fully closed off</p>
-<p><img src="https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Alpinist_Badge.webp" alt="Badge Winter" style="width:1em; height:1em; vertical-align:middle;"> <strong>Alpine:</strong> Today is the Alpine, only the capybara will spawn</p>
-</div>
+    <div class="faq-content">
+      <p><a href="https://discord.com/channels/1368870708335083650/1397665010141892758" target="_blank" rel="noopener noreferrer">Nilla's Daily Guides!</a></p>
+      <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612" target="_blank" rel="noopener noreferrer">5ome's Achievement Guide</a></p>
+      <p>🟢 <strong>Yes:</strong> The tomb is fully open, no bugs or glitches required</p>
+      <p>🟡 <strong>Yes but:</strong> The tomb is open, but some part of it (most likely the maze) is blocked off</p>
+      <p>🟠 <strong>Sorta:</strong> The tomb is closed, but a bug in the terrain allows you to jump in it</p>
+      <p>🔴 <strong>No:</strong> The tomb is fully closed off</p>
+      <p><img src="https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Alpinist_Badge.webp" alt="Badge Winter" style="width:1em; height:1em; vertical-align:middle;"> <strong>Alpine:</strong> Today is the Alpine, only the capybara will spawn</p>
+    </div>
   </div>
 
   <div class="community-voting-header">Community Voting (Fallback)</div>
@@ -120,7 +121,16 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
 async function loadOfficialStatus(){
-  try {const resp = await fetch('./status.json?ts='+new Date().getTime()); if(resp.ok) displayOfficialStatus(await resp.json()); else document.getElementById('official-info').textContent='Official status not available';} catch(e){console.error(e); document.getElementById('official-info').textContent='Error loading official status';}
+  try {
+    const resp = await fetch('./status.json?ts='+new Date().getTime());
+    if(resp.ok) displayOfficialStatus(await resp.json());
+    else document.getElementById('official-info').textContent='Official status not available';
+  } catch(e){
+    console.error(e);
+    document.getElementById('official-info').textContent='Error loading official status';
+  }
+} // <-- FIXED, closes function
+
 function displayOfficialStatus(status){
   const infoDiv=document.getElementById('official-info');
   const imagesDiv=document.getElementById('official-images');
@@ -197,7 +207,6 @@ function displayOfficialStatus(status){
     screenshotDiv.style.display='none';
   }
 }
-
 
 window.onload=function(){
   loadOfficialStatus();
