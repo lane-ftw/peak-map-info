@@ -44,11 +44,10 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 .loading {text-align:center; padding:20px; color:#999;}
 .section-divider {height:2px; background:linear-gradient(90deg,transparent,#404040,transparent); margin:0 20px;}
 .community-voting-header {text-align:center; padding:20px; color:#b0b0b0; font-size:1.1rem;}
-.faq-content{max-height:0;overflow:hidden;transition:all 0.3s ease;padding:0;}
-.faq-content.show{max-height:500px;padding:10px;}
-.faq-btn{width:100%;text-align:left;} 
+.faq-btn{padding:15px 25px;border:none;border-radius:8px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.3s ease;background:linear-gradient(45deg,#6c757d,#6c757d);color:white;width:100%;text-align:left;margin-bottom:5px;}
+.faq-content{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;padding:0 10px;}
+.faq-content.show{max-height:500px;padding:10px 10px;}
 @media(max-width:768px){.voting-section{grid-template-columns:1fr; gap:30px; padding:20px;} .official-status h1{font-size:1.2rem;} .status-info{font-size:1rem;}}
-
 </style>
 </head>
 <body>
@@ -67,19 +66,22 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
       <img id="discord-image" src="" alt="Discord Screenshot" onclick="window.open(this.src, '_blank')" />
     </div>
   </div>
-<!-- FAQ Button -->
-<div class="voting-section">
-  <button class="vote-btn faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
-    FAQ / Info
-  </button>
-  <div class="faq-content">
-lorem  </div>
-</div>
-</div>
+
+  <div class="section-divider"></div>
+
+  <!-- FAQ Button -->
+  <div style="margin:20px;">
+    <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">FAQ / Info</button>
+    <div class="faq-content">
+      Example: You can vote for the biome or tomb status each day. Community votes are just a fallback if official info is missing.
+    </div>
+  </div>
+
   <div class="community-voting-header">Community Voting (Fallback)</div>
   <div class="current-status" id="status">
     <div class="loading">Loading community votes...</div>
   </div>
+
   <div class="voting-section">
     <div class="vote-card">
       <h2>Today's Biome</h2>
@@ -107,192 +109,15 @@ lorem  </div>
   </div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
 <script>
 async function loadOfficialStatus(){
-  try {
-    const resp = await fetch('./status.json?ts=' + new Date().getTime());
-    if(resp.ok) displayOfficialStatus(await resp.json());
-    else document.getElementById('official-info').textContent='Official status not available';
-  } catch(e){
-    console.error(e);
-    document.getElementById('official-info').textContent='Error loading official status';
-  }
+  try {const resp = await fetch('./status.json?ts='+new Date().getTime()); if(resp.ok) displayOfficialStatus(await resp.json()); else document.getElementById('official-info').textContent='Official status not available';} catch(e){console.error(e); document.getElementById('official-info').textContent='Error loading official status';}
 }
-
 function displayOfficialStatus(status){
-  const infoDiv = document.getElementById('official-info');
-  const imagesDiv = document.getElementById('official-images');
-  const updatedDiv = document.getElementById('official-updated');
-  const screenshotDiv = document.getElementById('discord-screenshot');
-  const screenshotImg = document.getElementById('discord-image');
-
-  // Check if status is from today
-  const today = new Date().toISOString().split('T')[0];
-  const statusDate = status.date;
-  
-  if (statusDate !== today) {
-    infoDiv.textContent = `Status from ${statusDate} (not today)`;
-    infoDiv.classList.add('status-warning');
-    // Still show the rest of the data, just with warning
-  } else {
-    infoDiv.classList.remove('status-warning');
-  }
-
-  imagesDiv.innerHTML = '';
-
-  // Biome image (unchanged)
-  if(status.biomeImage){
-    const biomeImg = document.createElement('img');
-    biomeImg.src = status.biomeImage;
-    biomeImg.alt = status.biome || 'Biome';
-    imagesDiv.appendChild(biomeImg);
-  }
-
-  // Tomb emoji (unchanged)
-  let tombChar = '';
-  switch(status.tomb){
-    case 'yes': tombChar='🟢'; break;
-    case 'partial': tombChar='🟡'; break;
-    case 'glitch': tombChar='🟠'; break;
-    case 'no': tombChar='🔴'; break;
-    case 'alpine': tombChar='🔵'; break;
-  }
-  if(tombChar){
-    const tombSpan = document.createElement('span');
-    tombSpan.textContent = tombChar;
-    tombSpan.style.fontSize = '64px';
-    tombSpan.style.lineHeight = '64px';
-    tombSpan.style.display = 'inline-block';
-    imagesDiv.appendChild(tombSpan);
-  }
-
-  // Text below (only update if not showing warning)
-  if (statusDate === today) {
-    const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
-    let tombText = 'Unknown';
-    switch(status.tomb){
-      case 'yes': tombText='Open'; break;
-      case 'partial': tombText='Partially Open'; break;
-      case 'glitch': tombText='Glitch Access Only'; break;
-      case 'no': tombText='Closed'; break;
-      case 'alpine': tombText='Alpine'; break;
-    }
-    infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
-  }
-
-  // Last updated
-  if(status.lastUpdated){
-    const lastUpdatedDate = new Date(status.lastUpdated);
-    updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
-  }
-
-  // Discord screenshot (new)
-  if(status.currentImage){
-    screenshotImg.src = status.currentImage;
-    screenshotDiv.style.display = 'block';
-  } else {
-    screenshotDiv.style.display = 'none';
-  }
-}
-
-// ===== COMMUNITY VOTING (unchanged) =====
-window.onload = function(){
-  loadOfficialStatus();
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAtK5L-nubV-_i-gEgnP2_gzLi31IGl0zg",
-    authDomain: "peak-map-vote.firebaseapp.com",
-    projectId: "peak-map-vote",
-    storageBucket: "peak-map-vote.firebasestorage.app",
-    messagingSenderId: "317069037525",
-    appId: "1:317069037525:web:43512bf56f7f67c2c5775c"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  let userVotes = {biome:null,tomb:null};
-
-  function getTodayString(){
-    const now = new Date();
-    const utcHour = now.getUTCHours();
-    const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-    if(utcHour<18) utcDate.setUTCDate(utcDate.getUTCDate()-1);
-    return utcDate.toISOString().split('T')[0];
-  }
-
-  async function initializeTodayVotes(today){
-    const init = {biome:{mesa:0,alpine:0},tomb:{yes:0,no:0}};
-    await db.collection('daily-votes').doc(today).set({
-      votes:init,
-      date:today,
-      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  }
-
-  function updateDisplay(votes){
-    document.getElementById('mesa-count').textContent=votes.biome.mesa;
-    document.getElementById('alpine-count').textContent=votes.biome.alpine;
-    document.getElementById('yes-count').textContent=votes.tomb.yes;
-    document.getElementById('no-count').textContent=votes.tomb.no;
-
-    const biomeWinner = votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
-    const tombWinner = votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
-    const total = votes.biome.mesa+votes.biome.alpine+votes.tomb.yes+votes.tomb.no;
-    document.getElementById('status').textContent=total===0?'Community consensus: No votes yet today':`Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
-  }
-
-  function initializeVoting(){
-    const today=getTodayString();
-    const docRef=db.collection('daily-votes').doc(today);
-    docRef.onSnapshot(doc=>{
-      if(doc.exists) updateDisplay(doc.data().votes);
-      else initializeTodayVotes(today);
-    });
-  }
-
-async function vote(category, option) {
-  if (userVotes[category]) {
-    alert(`You've already voted ${userVotes[category]} for ${category}!`);
-    return;
-  }
-
-  const today = getTodayString();
-  const btn = document.getElementById(option + '-btn');
-
-  try {
-    btn.disabled = true;
-    btn.textContent = 'Voting...';
-
-    await db.collection('daily-votes').doc(today).set({
-      votes: {
-        [category]: {
-          [option]: firebase.firestore.FieldValue.increment(1)
-        }
-      },
-      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-
-    userVotes[category] = option;
-    btn.style.transform = 'scale(0.95)';
-    setTimeout(() => {
-      btn.style.transform = '';
-      btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
-    }, 200);
-
-  } catch (e) {
-    console.error(e);
-    alert('Error submitting vote.');
-    btn.disabled = false;
-    btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
-  }
-}
-
-  initializeVoting();
-  window.vote=vote;
-};
-</script>
-</body>
-</html>
+  const infoDiv=document.getElementById('official-info');
+  const imagesDiv=document.getElementById('official-images');
+  const updatedDiv=document.getElementById('official-updated');
+  const screenshotDiv=document.getElementById('discord-screenshot');
+  const screenshotImg=document.get
