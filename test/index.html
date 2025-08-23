@@ -53,19 +53,19 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 
 .floating-countdown {
   width: 100%;
-  background: rgba(0,0,0,0.4);
-  color: #ffffff;
+  color: #ffffff; /* Keep numbers visible */
   font-size: 2rem;
   font-weight: 700;
   padding: 12px 24px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
   letter-spacing: 2px;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  backdrop-filter: blur(6px); /* optional: blur behind text */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3); /* optional shadow */
   transition: transform 0.3s ease, opacity 0.3s ease;
+  background: transparent; /* fully transparent now */
 }
-  
+
 .floating-countdown:hover {
   transform: scale(1.05);
   opacity: 0.95;
