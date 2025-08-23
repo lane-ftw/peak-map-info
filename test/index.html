@@ -11,10 +11,18 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 .official-status {background:linear-gradient(135deg,#4a90e2 0%,#357abd 100%); padding:25px; text-align:center; border-bottom:3px solid #2c5aa0;}
 .official-status h1 {font-size:1.5rem; margin-bottom:10px; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.3);}
 .status-info {font-size:1.2rem; font-weight:600; color:#f0f8ff; text-shadow:0 1px 2px rgba(0,0,0,0.2);}
+.status-warning {color:#ffa500 !important;}
 #official-images {display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px;}
 #official-images img {height:64px; width:auto;}
 #official-images span {font-size:64px; line-height:1; vertical-align:middle;}
 .last-updated {font-size:0.9rem; margin-top:8px; color:rgba(255,255,255,0.8);}
+.footer-thanks {margin-top:15px; font-size:0.9rem; color:rgba(255,255,255,0.9);}
+.footer-thanks a {color:#87ceeb; text-decoration:none;}
+.footer-thanks a:hover {text-decoration:underline;}
+.discord-screenshot {margin-top:20px; text-align:center;}
+.discord-screenshot img {max-width:100%; max-height:400px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.4); border:2px solid rgba(255,255,255,0.2); cursor:pointer; transition:transform 0.3s ease;}
+.discord-screenshot img:hover {transform:scale(1.02);}
+.discord-screenshot-label {font-size:0.9rem; color:rgba(255,255,255,0.8); margin-bottom:8px;}
 .voting-section {padding:40px; display:grid; grid-template-columns:1fr 1fr; gap:40px;}
 .vote-card {background:#1e1e1e; border-radius:12px; padding:30px; border:2px solid #404040; transition:all 0.3s ease;}
 .vote-card:hover {transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.4);}
@@ -49,6 +57,10 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
     <div class="footer-thanks">
       Thanks to <strong>Scoutmaster Noobman!</strong><br>
       <a href="https://discord.com/channels/1368870708335083650/1405612577454690375" target="_blank" rel="noopener noreferrer">Thread on PEAK Discord</a>
+    </div>
+    <div class="discord-screenshot" id="discord-screenshot" style="display:none;">
+      <div class="discord-screenshot-label">Discord Screenshot:</div>
+      <img id="discord-image" src="" alt="Discord Screenshot" onclick="window.open(this.src, '_blank')" />
     </div>
   </div>
   <div class="section-divider"></div>
@@ -103,10 +115,24 @@ function displayOfficialStatus(status){
   const infoDiv = document.getElementById('official-info');
   const imagesDiv = document.getElementById('official-images');
   const updatedDiv = document.getElementById('official-updated');
+  const screenshotDiv = document.getElementById('discord-screenshot');
+  const screenshotImg = document.getElementById('discord-image');
+
+  // Check if status is from today
+  const today = new Date().toISOString().split('T')[0];
+  const statusDate = status.date;
+  
+  if (statusDate !== today) {
+    infoDiv.textContent = `Status from ${statusDate} (not today)`;
+    infoDiv.classList.add('status-warning');
+    // Still show the rest of the data, just with warning
+  } else {
+    infoDiv.classList.remove('status-warning');
+  }
 
   imagesDiv.innerHTML = '';
 
-  // Biome image
+  // Biome image (unchanged)
   if(status.biomeImage){
     const biomeImg = document.createElement('img');
     biomeImg.src = status.biomeImage;
@@ -114,44 +140,54 @@ function displayOfficialStatus(status){
     imagesDiv.appendChild(biomeImg);
   }
 
-// Tomb emoji
-let tombChar = '';
-switch(status.tomb){
-  case 'yes': tombChar='🟢'; break;
-  case 'partial': tombChar='🟡'; break;
-  case 'glitch': tombChar='🟠'; break;
-  case 'no': tombChar='🔴'; break;
-  case 'alpine': tombChar='🔵'; break;
-}
-if(tombChar){
-  const tombSpan = document.createElement('span');
-  tombSpan.textContent = tombChar;
-  tombSpan.style.fontSize = '64px';      // force same height as images
-  tombSpan.style.lineHeight = '64px';    // align vertically
-  tombSpan.style.display = 'inline-block';
-  imagesDiv.appendChild(tombSpan);
-}
-
-  // Text below
-  const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
-  let tombText = 'Unknown';
+  // Tomb emoji (unchanged)
+  let tombChar = '';
   switch(status.tomb){
-    case 'yes': tombText='Open'; break;
-    case 'partial': tombText='Partially Open'; break;
-    case 'glitch': tombText='Glitch Access Only'; break;
-    case 'no': tombText='Closed'; break;
-    case 'alpine': tombText='Alpine'; break;
+    case 'yes': tombChar='🟢'; break;
+    case 'partial': tombChar='🟡'; break;
+    case 'glitch': tombChar='🟠'; break;
+    case 'no': tombChar='🔴'; break;
+    case 'alpine': tombChar='🔵'; break;
   }
-  infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
+  if(tombChar){
+    const tombSpan = document.createElement('span');
+    tombSpan.textContent = tombChar;
+    tombSpan.style.fontSize = '64px';
+    tombSpan.style.lineHeight = '64px';
+    tombSpan.style.display = 'inline-block';
+    imagesDiv.appendChild(tombSpan);
+  }
+
+  // Text below (only update if not showing warning)
+  if (statusDate === today) {
+    const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
+    let tombText = 'Unknown';
+    switch(status.tomb){
+      case 'yes': tombText='Open'; break;
+      case 'partial': tombText='Partially Open'; break;
+      case 'glitch': tombText='Glitch Access Only'; break;
+      case 'no': tombText='Closed'; break;
+      case 'alpine': tombText='Alpine'; break;
+    }
+    infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
+  }
 
   // Last updated
   if(status.lastUpdated){
     const lastUpdatedDate = new Date(status.lastUpdated);
     updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
   }
+
+  // Discord screenshot (new)
+  if(status.currentImage){
+    screenshotImg.src = status.currentImage;
+    screenshotDiv.style.display = 'block';
+  } else {
+    screenshotDiv.style.display = 'none';
+  }
 }
 
-// ===== COMMUNITY VOTING =====
+// ===== COMMUNITY VOTING (unchanged) =====
 window.onload = function(){
   loadOfficialStatus();
 
@@ -225,7 +261,7 @@ async function vote(category, option) {
         }
       },
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }); // 👈 ensures votes stays a map
+    }, { merge: true });
 
     userVotes[category] = option;
     btn.style.transform = 'scale(0.95)';
@@ -241,7 +277,6 @@ async function vote(category, option) {
     btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
   }
 }
-
 
   initializeVoting();
   window.vote=vote;
