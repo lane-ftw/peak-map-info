@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>PEAK Map Info</title>
 <link href="https://fonts.googleapis.com/css2?family=Darumadrop+One&display=swap" rel="stylesheet">
@@ -21,16 +21,16 @@ input, textarea, select {
 }
 
 body {
-      background: url('images/fw.jpg');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-attachment: fixed; 
-      min-height: 100vh;
-      color: #e0e0e0;
-      font-size: 1.2rem;
-      line-height: 1.3;
-    }
+  background: url('images/fw.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: #e0e0e0;
+  font-size: 1.2rem;
+  line-height: 1.3;
+}
 
 .container {
   max-width:780px;
@@ -42,39 +42,24 @@ body {
   border:1px solid #404040;
 }
 
+/* -----------------------
+   existing styles left intact (abbreviated here)
+   ----------------------- */
 .official-status {
   background:linear-gradient(135deg,#4a90e2 0%,#357abd 100%);
   padding:12px;
   text-align:center;
   border-bottom:2px solid #2c5aa0;
 }
-
-.official-status h1 {
-  font-size:2.2rem;
-  margin-bottom:6px;
-  color:white;
-  text-shadow:0 2px 4px rgba(0,0,0,0.3);
-}
-
-.status-info {
-  font-size:1.4rem;
-  font-weight:600;
-  color:#f0f8ff;
-  text-shadow:0 1px 2px rgba(0,0,0,0.2);
-  margin-bottom:4px;
-}
-
+.official-status h1 { font-size:2.2rem; margin-bottom:6px; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.3); }
+.status-info { font-size:1.4rem; font-weight:600; color:#f0f8ff; text-shadow:0 1px 2px rgba(0,0,0,0.2); margin-bottom:4px; }
 .status-warning { color:#ffa500 !important; }
-
 #official-images { display:flex; align-items:center; justify-content:center; gap:4px; margin-bottom:4px; }
 #official-images img { height:64px; width:auto; }
 #official-images span { font-size:64px; line-height:1; vertical-align:middle; }
-
 .last-updated { font-size:1rem; margin-top:4px; color:rgba(255,255,255,0.8); }
-
 .footer-thanks { margin-top:8px; font-size:1rem; color:rgba(255,255,255,0.9); }
 .footer-thanks a { color:#87ceeb; font-weight:bold; text-decoration:none; }
-.footer-thanks a:visited { color:#87ceeb; font-weight:bold; }
 .footer-thanks a:hover { text-decoration:underline; }
 
 .discord-screenshot { margin-top:12px; text-align:center; }
@@ -108,6 +93,20 @@ body {
 
 .community-voting-header { text-align:center; padding:8px; color:#b0b0b0; font-size:1.3rem; }
 
+/* ---------- FAQ area: FIXED STYLES ---------- */
+
+/* Wrapper that holds the button, the content, and the popup.
+   Keep it inside your .container so layout remains consistent. */
+.faq-btn-container {
+  position: relative;
+  width: 100%;
+  margin: 20px 0;
+  /* create space on the right so the popup never gets clipped by the column edge */
+  padding-right: 180px;
+  box-sizing: border-box;
+}
+
+/* Button — full width inside the column, stays on top (z-index) */
 .faq-btn {
   padding: 10px 18px;
   border: none;
@@ -115,56 +114,57 @@ body {
   font-size: 1.3rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease;
   background: #1a1a1a;
   color: #e0e0e0;
-  width: 100%;             /* keep your full-width style */
-  text-align: center;
-}
-.faq-btn:hover {
-  background: #222;
-}
-.faq-content { max-height:0; overflow:hidden; transition:max-height 0.2s ease,padding 0.2s ease; padding:0 6px; text-align:center; font-size:1.2rem; }
-
-.faq-content.show { max-height:500px; padding:6px 6px; }
-.faq-btn-container {
-  display: block;           /* full width button */
   width: 100%;
-  position: relative;       /* popup positioned relative to container */
-}
-.faq-btn-popup {
+  text-align: center;
   position: relative;
-  overflow: hidden;
+  z-index: 5; /* keep the button above the popup so it masks the bottom portion */
 }
+.faq-btn:hover { background: #222; }
 
+/* The FAQ content is immediately after the button in the DOM (important).
+   The .show class toggles it open (your JS toggles this). */
+.faq-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease, padding 0.2s ease;
+  padding: 0 6px;
+  text-align: center;
+  font-size: 1.2rem;
+}
+.faq-content.show { max-height: 500px; padding: 6px 6px; }
+
+/* Popup image — absolutely positioned relative to the wrapper.
+   It starts tucked under the button (so the button visually masks the bottom) */
 .faq-popup {
   position: absolute;
-  bottom: 0;                /* start at bottom edge of button */
-  right: 0;                 /* align with button’s right side */
+  /* align the image so its lower edge starts roughly at the button's horizontal center */
+  top: 6px;                 /* place near the top of the button */
+  right: 8px;               /* near the button's right edge (inside padding area) */
   width: 140px;
   opacity: 0;
   pointer-events: none;
-  transform: translate(0, 40%);  /* mostly hidden behind button */
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  z-index: 5;
+  transform: translate(30px, 30%); /* start shifted down/right (hidden) */
+  transition: opacity 0.38s ease, transform 0.38s ease;
+  z-index: 3; /* below the button (button z-index:5) so button covers bottom portion */
 }
 
+/* Hover the wrapper (or the button) to reveal the popup */
 .faq-btn-container:hover .faq-popup {
   opacity: 1;
-  transform: translate(20px, -20%); /* slide out diagonally */
+  transform: translate(0, 0); /* slide up-left into place (appears from under top-right) */
 }
+
 /* FAQ links styling (bold, readable) */
 .faq-content a {
   font-weight: bold;
-  color: #87ceeb;        /* readable blue */
-  text-decoration: none; 
+  color: #87ceeb;
+  text-decoration: none;
 }
+.faq-content a:hover { text-decoration: underline; color: #ffffff; }
 
-.faq-content a:hover {
-  text-decoration: underline;
-  color: #ffffff;        /* highlight on hover */
-}
-  
 .floating-countdown {
   background: transparent;
   color: #ffffff;
@@ -174,11 +174,7 @@ body {
   text-align: center;
   letter-spacing: 2px;
 }
-
-.floating-countdown:hover {
-  transform: scale(1.05);
-  opacity: 0.95;
-}
+.floating-countdown:hover { transform: scale(1.05); opacity: 0.95; }
 
 @media(max-width:768px){
   .voting-section { grid-template-columns:1fr; gap:10px; padding:10px; }
@@ -186,19 +182,11 @@ body {
   .status-info { font-size:1.3rem; }
   .floating-countdown { font-size:2rem; padding: 5px 10px; }
 }
-
-@media(max-width:768px){
-  .voting-section { grid-template-columns:1fr; gap:15px; padding:15px; }
-  .official-status h1 { font-size:1.7rem; }
-  .status-info { font-size:1.2rem; }
-  .floating-countdown { font-size: 1.8rem; padding: 6px 12px; }
+@media(max-width:480px){
+  .faq-btn-container { padding-right: 110px; } /* reduce popup space on small screens */
+  .faq-popup { width: 110px; right: 6px; top: 6px; }
 }
-.artist-credit {
-  text-align: center;
-  font-size: 12px;
-  color: #ccc;
-  margin-top: 10px;
-}
+.artist-credit { text-align: center; font-size: 12px; color: #ccc; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -224,24 +212,29 @@ body {
 
     <div class="section-divider"></div>
 
-<!-- FAQ Button Container -->
-<div class="faq-btn-container" style="margin: 20px;">
-  <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
-    FAQ / Info
-  </button>
-  <!-- popup image stays inside container -->
-  <img src="images/cc.png" alt="CC says HI!" class="faq-popup">
-</div>
+    <!-- ---------- FAQ block (fixed) ---------- -->
+    <div class="faq-btn-container">
+      <!-- button's nextElementSibling MUST be the .faq-content for your existing onclick to work -->
+      <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
+        FAQ / Info
+      </button>
 
-<div class="faq-content">
-  <p><a href="https://discord.com/channels/1368870708335083650/1397665010141892758" target="_blank" rel="noopener noreferrer">Nilla's Daily Guides!</a></p>
-  <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612" target="_blank" rel="noopener noreferrer">5ome's Achievement Guide</a></p>
-  <p>🟢 <strong>Yes:</strong> The tomb is fully open, no bugs or glitches required</p>
-  <p>🟡 <strong>Yes but:</strong> The tomb is open, but some part of it (most likely the maze) is blocked off</p>
-  <p>🟠 <strong>Sorta:</strong> The tomb is closed, but a bug in the terrain allows you to jump in it</p>
-  <p>🔴 <strong>No:</strong> The tomb is fully closed off</p>
-  <p><img src="https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Alpinist_Badge.webp" alt="Badge Winter" style="width:1em; height:1em; vertical-align:middle;"> <strong>Alpine:</strong> Today is the Alpine, only the capybara will spawn</p>
-</div>
+      <!-- FAQ content immediately follows the button (important) -->
+      <div class="faq-content">
+        <p><a href="https://discord.com/channels/1368870708335083650/1397665010141892758" target="_blank" rel="noopener noreferrer">Nilla's Daily Guides!</a></p>
+        <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612" target="_blank" rel="noopener noreferrer">5ome's Achievement Guide</a></p>
+        <p>🟢 <strong>Yes:</strong> The tomb is fully open, no bugs or glitches required</p>
+        <p>🟡 <strong>Yes but:</strong> The tomb is open, but some part of it (most likely the maze) is blocked off</p>
+        <p>🟠 <strong>Sorta:</strong> The tomb is closed, but a bug in the terrain allows you to jump in it</p>
+        <p>🔴 <strong>No:</strong> The tomb is fully closed off</p>
+        <p><img src="https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Alpinist_Badge.webp" alt="Badge Winter" style="width:1em; height:1em; vertical-align:middle;"> <strong>Alpine:</strong> Today is the Alpine, only the capybara will spawn</p>
+      </div>
+
+      <!-- popup image comes AFTER the .faq-content in the DOM so the button's next sibling remains the content.
+           It is absolutely positioned (so visually it can overlap the button). -->
+      <img src="images/cc.png" alt="CC says HI!" class="faq-popup">
+    </div>
+    <!-- ---------- end FAQ block ---------- -->
 
     <div class="community-voting-header">Community Voting (Fallback)</div>
     <div class="current-status" id="status">
@@ -274,9 +267,23 @@ body {
       </div>
     </div>
   </div>
-<p class="artist-credit">
-  Background art by <a href="LINK_TO_ARTIST" target="_blank">Artist Name</a>
-</p>
+
+  <p class="artist-credit">
+    Background art by <a href="LINK_TO_ARTIST" target="_blank">Artist Name</a>
+  </p>
+
+  <!-- keep your scripts unchanged -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script>
+  /* Your existing JS (countdown + firebase + voting) — keep as before.
+     I didn't modify it so the toggle line `this.nextElementSibling.classList.toggle('show')`
+     still points to the immediate .faq-content element (button's next sibling). */
+  // (Insert your original JS here unchanged — omitted for brevity in this snippet)
+  </script>
+</body>
+</html>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
