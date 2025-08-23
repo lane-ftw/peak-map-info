@@ -101,10 +101,10 @@ body {
   position: relative;
   width: 100%;
   margin: 20px 0;
-  /* create space on the right so the popup never gets clipped by the column edge */
-  padding-right: 180px;
+  padding: 0 160px;   /* <-- equal left/right gaps (adjust value to taste) */
   box-sizing: border-box;
 }
+
 
 /* Button — full width inside the column, stays on top (z-index) */
 .faq-btn {
@@ -140,13 +140,13 @@ body {
    It starts tucked under the button (so the button visually masks the bottom) */
 .faq-popup {
   position: absolute;
-  /* align the image so its lower edge starts roughly at the button's horizontal center */
-  top: 6px;                 /* place near the top of the button */
-  right: 8px;               /* near the button's right edge (inside padding area) */
+  /* Position it to start from under the button and end halfway up */
+  top: 70%;                 /* Start from 70% down the button height */
+  right: 8px;               /* Near the button's right edge (inside padding area) */
   width: 140px;
   opacity: 0;
   pointer-events: none;
-  transform: translate(30px, 30%); /* start shifted down/right (hidden) */
+  transform: translateY(100%); /* Start completely hidden below */
   transition: opacity 0.38s ease, transform 0.38s ease;
   z-index: 3; /* below the button (button z-index:5) so button covers bottom portion */
 }
@@ -154,7 +154,7 @@ body {
 /* Hover the wrapper (or the button) to reveal the popup */
 .faq-btn-container:hover .faq-popup {
   opacity: 1;
-  transform: translate(0, 0); /* slide up-left into place (appears from under top-right) */
+  transform: translateY(0); /* Slide up to normal position - bottom half hidden by button */
 }
 
 /* FAQ links styling (bold, readable) */
@@ -164,7 +164,6 @@ body {
   text-decoration: none;
 }
 .faq-content a:hover { text-decoration: underline; color: #ffffff; }
-
 .floating-countdown {
   background: transparent;
   color: #ffffff;
@@ -183,8 +182,14 @@ body {
   .floating-countdown { font-size:2rem; padding: 5px 10px; }
 }
 @media(max-width:480px){
-  .faq-btn-container { padding-right: 110px; } /* reduce popup space on small screens */
-  .faq-popup { width: 110px; right: 6px; top: 6px; }
+  .faq-btn-container { 
+    padding: 0 110px; /* Reduce popup space on small screens, but keep equal left/right */
+  }
+  .faq-popup { 
+    width: 110px; 
+    right: 6px; 
+    top: 70%; /* Keep same positioning ratio on mobile */
+  }
 }
 .artist-credit { text-align: center; font-size: 12px; color: #ccc; margin-top: 10px; }
 </style>
