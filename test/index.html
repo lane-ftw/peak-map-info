@@ -121,20 +121,19 @@ body {
 
 .faq-popup {
   position: absolute;
-  bottom: -50%;       /* start hidden behind the button */
-  right: -10%;        /* start slightly off to the right */
+  bottom: 0;           /* align with bottom of button */
+  right: 0;            /* start behind the button */
   width: 140px;
-  opacity: 0;         /* invisible initially */
+  opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s ease; /* smooth fade + slide */
+  transform: translate(0, 50%);  /* start partially behind the button */
+  transition: opacity 0.4s ease, transform 0.4s ease;
   z-index: 1000;
-  transform: translate(0, 0); /* starting point */
 }
 
-
-.faq-btn-popup:hover .faq-popup {
+div[style*="position: relative"]:hover .faq-popup {
   opacity: 1;
-  transform: translate(20px, -60%); /* slide diagonally up-right */
+  transform: translate(30px, -60%); /* slide up and right */
 }
 
 /* FAQ links styling (bold, readable) */
@@ -209,15 +208,16 @@ body {
     <div class="section-divider"></div>
 
     <!-- FAQ Button -->
-<div style="margin:20px; position:relative;">
-  <button class="faq-btn faq-btn-popup" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
+<div style="position: relative; display: inline-block; margin: 20px;">
+  <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
     FAQ / Info
-    <img src="images/cc.png" alt="CC says HI!" class="faq-popup">
   </button>
-  
-  <div class="faq-content">
+  <img src="images/cc.png" alt="CC says HI!" class="faq-popup">
+</div>
+
+<div class="faq-content">
     <p><a href="https://discord.com/channels/1368870708335083650/1397665010141892758" target="_blank" rel="noopener noreferrer">Nilla's Daily Guides!</a></p>
-    <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612" target="_blank" rel="noopener noreferrer">5ome's Achievement Guide</a></p>
+    <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612"
     <p>🟢 <strong>Yes:</strong> The tomb is fully open, no bugs or glitches required</p>
     <p>🟡 <strong>Yes but:</strong> The tomb is open, but some part of it (most likely the maze) is blocked off</p>
     <p>🟠 <strong>Sorta:</strong> The tomb is closed, but a bug in the terrain allows you to jump in it</p>
