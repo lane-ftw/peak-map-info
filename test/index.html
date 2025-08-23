@@ -6,21 +6,29 @@
 <title>PEAK Map Info</title>
 <link href="https://fonts.googleapis.com/css2?family=Darumadrop+One&display=swap" rel="stylesheet">
 <style>
-/* minimal reset (do not force a font on every pseudo-element or SVG) */
+/* minimal reset */
 * { margin:0; padding:0; box-sizing:border-box; }
 
-/* apply one consistent font to textual elements only (with emoji fallbacks) */
-html, body,
-main, header, footer, section, article, nav,
-div, p, span, a, li, ul, ol,
-h1, h2, h3, h4, h5, h6,
-button, label, strong, em, b, i, small,
-sup, sub, summary, details,
-input, textarea, select {
-  font-family: 'Darumadrop One', Tahoma, Geneva, Verdana,
-               'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* single font declaration with better cascade and unicode range consideration */
+:root {
+  --primary-font: 'Darumadrop One', system-ui, -apple-system, 'Segoe UI', 
+                  Roboto, Helvetica, Arial, 'Segoe UI Emoji', 'Apple Color Emoji', 
+                  'Noto Color Emoji', sans-serif;
+  --font-rendering: antialiased;
+  --font-smoothing: grayscale;
+}
+
+/* apply font to html for better inheritance cascade */
+html {
+  font-family: var(--primary-font);
+  -webkit-font-smoothing: var(--font-rendering);
+  -moz-osx-font-smoothing: var(--font-smoothing);
+  font-feature-settings: 'kern' 1; /* enable kerning if available */
+}
+
+/* ensure inheritance works properly for all text elements */
+body, input, textarea, select, button {
+  font-family: inherit;
 }
 
 /* page visuals */
@@ -87,7 +95,7 @@ body {
 
 .floating-countdown {
   background: transparent;
-  color: #ffffff; /* numbers stay visible */
+  color: #ffffff;
   font-size: 2rem;
   font-weight: 700;
   padding: 12px 24px;
@@ -95,7 +103,6 @@ body {
   letter-spacing: 2px;
   backdrop-filter: none;
   box-shadow: none;
-  /* font-family intentionally inherited from root textual rule above */
 }
 
 .floating-countdown:hover {
@@ -337,7 +344,7 @@ window.onload=function(){
   function getTodayString(){
     const now=new Date(); 
     const utcHour=now.getUTCHours(); 
-    const utcDate=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())); 
+    const utcNow=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())); 
     // CHANGE: rollover is now 22:00 UTC
     if(utcHour < 22) utcDate.setUTCDate(utcDate.getUTCDate()-1); 
     return utcDate.toISOString().split('T')[0];
