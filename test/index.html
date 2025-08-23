@@ -113,26 +113,28 @@ body {
 .faq-btn:hover { background:#222; }
 .faq-content.show { max-height:500px; padding:6px 6px; }
 
-/* FAQ button popup image with smooth fade + slide */
+
 .faq-btn-popup {
   position: relative;
+  overflow: hidden;
 }
 
 .faq-popup {
   position: absolute;
-  top: -10px;           /* vertical alignment */
-  right: -120px;        /* horizontal start offset */
-  width: 140px;         /* image size */
-  opacity: 0;           /* invisible by default */
-  transform: translateX(15px); /* start slightly to the right */
-  pointer-events: none; 
-  transition: opacity 0.4s ease, transform 0.4s ease; /* fade + slide */
+  bottom: -50%;       /* start hidden behind the button */
+  right: -10%;        /* start slightly off to the right */
+  width: 140px;
+  opacity: 0;         /* invisible initially */
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease; /* smooth fade + slide */
   z-index: 1000;
+  transform: translate(0, 0); /* starting point */
 }
 
+
 .faq-btn-popup:hover .faq-popup {
-  opacity: 1; 
-  transform: translateX(0); /* slide into place */
+  opacity: 1;
+  transform: translate(20px, -60%); /* slide diagonally up-right */
 }
 
 /* FAQ links styling (bold, readable) */
