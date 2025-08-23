@@ -1,58 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>PEAK Map Info</title>
 <link href="https://fonts.googleapis.com/css2?family=Darumadrop+One&display=swap" rel="stylesheet">
 <style>
-/* your CSS unchanged */
-* {margin:0;padding:0;box-sizing:border-box;}
-body {font-family:'Darumadrop One', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%); min-height:100vh; padding:0; color:#e0e0e0;}
-.container {max-width:800px; margin:0 auto; background:#2a2a2a; border-radius:15px; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden; border:1px solid #404040; margin-top:20px; margin-bottom:20px;}
-.official-status {background:linear-gradient(135deg,#4a90e2 0%,#357abd 100%); padding:25px; text-align:center; border-bottom:3px solid #2c5aa0;}
-.official-status h1 {font-size:1.5rem; margin-bottom:10px; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.3);}
-.status-info {font-size:1.2rem; font-weight:600; color:#f0f8ff; text-shadow:0 1px 2px rgba(0,0,0,0.2);}
-.status-warning {color:#ffa500 !important;}
-#official-images {display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px;}
-#official-images img {height:64px; width:auto;}
-#official-images span {font-size:64px; line-height:1; vertical-align:middle;}
-.last-updated {font-size:0.9rem; margin-top:8px; color:rgba(255,255,255,0.8);}
-.footer-thanks {margin-top:15px; font-size:0.9rem; color:rgba(255,255,255,0.9);}
-.footer-thanks a {color:#87ceeb; text-decoration:none;}
-.footer-thanks a:hover {text-decoration:underline;}
-.discord-screenshot {margin-top:20px; text-align:center;}
-.discord-screenshot img {max-width:100%; max-height:400px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.4); border:2px solid rgba(255,255,255,0.2); cursor:pointer; transition:transform 0.3s ease;}
-.discord-screenshot img:hover {transform:scale(1.02);}
-.discord-screenshot-label {font-size:0.9rem; color:rgba(255,255,255,0.8); margin-bottom:8px;}
-.voting-section {padding:40px; display:grid; grid-template-columns:1fr 1fr; gap:40px;}
-.vote-card {background:#1e1e1e; border-radius:12px; padding:30px; border:2px solid #404040; transition:all 0.3s ease;}
-.vote-card:hover {transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.4);}
-.vote-card h2 {font-size:1.8rem; margin-bottom:20px; color:#e0e0e0; text-align:center;}
-.voting-buttons {display:flex; flex-direction:column; gap:15px; margin-bottom:25px;}
-.vote-btn {padding:15px 25px; border:none; border-radius:8px; font-size:1.1rem; font-weight:600; cursor:pointer; transition:all 0.3s ease; background:#6c757d; color:white;}
-.vote-btn:hover {transform:translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,0.2);}
-.vote-btn:disabled {opacity:0.6; cursor:not-allowed;}
-.vote-btn.mesa {background:linear-gradient(45deg,#ff7b54,#ff6b35);}
-.vote-btn.alpine {background:linear-gradient(45deg,#74b9ff,#0984e3);}
-.vote-btn.yes {background:linear-gradient(45deg,#00b894,#00a085);}
-.vote-btn.no {background:linear-gradient(45deg,#e17055,#d63031);}
-.results {background:#333; border-radius:8px; padding:20px; border:2px solid #555;}
-.result-item {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #555;}
-.result-item:last-child {border-bottom:none;}
-.result-label {font-weight:600; color:#e0e0e0;}
-.result-count {background:#555; padding:5px 12px; border-radius:20px; font-weight:bold; color:#e0e0e0;}
-.current-status {text-align:center; margin:20px; padding:15px; background:#1a1a1a; border-radius:8px; font-weight:600; color:#e0e0e0; border:1px solid #404040;}
-.loading {text-align:center; padding:20px; color:#999;}
-.section-divider {height:2px; background:linear-gradient(90deg,transparent,#404040,transparent); margin:0 20px;}
-.community-voting-header {text-align:center; padding:20px; color:#b0b0b0; font-size:1.1rem;}
-.faq-btn{padding:15px 25px;border:none;border-radius:8px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.3s ease;background:#1a1a1a;color:#e0e0e0;width:100%;text-align:center;margin-bottom:5px;}
-.faq-content{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;padding:0 10px;}
-.faq-btn:hover{background:#222;}
-.faq-content{max-height:0;overflow:hidden;transition:all 0.3s ease;padding:0;text-align:center;}
-.faq-content.show{max-height:500px;padding:10px 10px;}
+/* minimal reset (do not force a font on every pseudo-element or SVG) */
+* { margin:0; padding:0; box-sizing:border-box; }
+
+/* apply one consistent font to textual elements only (with emoji fallbacks) */
+html, body,
+main, header, footer, section, article, nav,
+div, p, span, a, li, ul, ol,
+h1, h2, h3, h4, h5, h6,
+button, label, strong, em, b, i, small,
+sup, sub, summary, details,
+input, textarea, select {
+  font-family: 'Darumadrop One', Tahoma, Geneva, Verdana,
+               'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* page visuals */
+body {
+  background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);
+  min-height:100vh;
+  padding:0;
+  color:#e0e0e0;
+}
+
+/* layout container */
+.container { max-width:800px; margin:0 auto; background:#2a2a2a; border-radius:15px; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden; border:1px solid #404040; margin-top:20px; margin-bottom:20px; }
+.official-status { background:linear-gradient(135deg,#4a90e2 0%,#357abd 100%); padding:25px; text-align:center; border-bottom:3px solid #2c5aa0; }
+.official-status h1 { font-size:1.5rem; margin-bottom:10px; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.3); }
+.status-info { font-size:1.2rem; font-weight:600; color:#f0f8ff; text-shadow:0 1px 2px rgba(0,0,0,0.2); }
+.status-warning { color:#ffa500 !important; }
+#official-images { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; }
+#official-images img { height:64px; width:auto; }
+#official-images span { font-size:64px; line-height:1; vertical-align:middle; }
+
+/* timestamps / footer */
+.last-updated { font-size:0.9rem; margin-top:8px; color:rgba(255,255,255,0.8); }
+.footer-thanks { margin-top:15px; font-size:0.9rem; color:rgba(255,255,255,0.9); }
+.footer-thanks a { color:#87ceeb; text-decoration:none; }
+.footer-thanks a:hover { text-decoration:underline; }
+
+/* discord image */
+.discord-screenshot { margin-top:20px; text-align:center; }
+.discord-screenshot img { max-width:100%; max-height:400px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.4); border:2px solid rgba(255,255,255,0.2); cursor:pointer; transition:transform 0.3s ease; }
+.discord-screenshot img:hover { transform:scale(1.02); }
+.discord-screenshot-label { font-size:0.9rem; color:rgba(255,255,255,0.8); margin-bottom:8px; }
+
+/* voting layout */
+.voting-section { padding:40px; display:grid; grid-template-columns:1fr 1fr; gap:40px; }
+.vote-card { background:#1e1e1e; border-radius:12px; padding:30px; border:2px solid #404040; transition:all 0.3s ease; }
+.vote-card:hover { transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.4); }
+.vote-card h2 { font-size:1.8rem; margin-bottom:20px; color:#e0e0e0; text-align:center; }
+.voting-buttons { display:flex; flex-direction:column; gap:15px; margin-bottom:25px; }
+.vote-btn { padding:15px 25px; border:none; border-radius:8px; font-size:1.1rem; font-weight:600; cursor:pointer; transition:all 0.3s ease; background:#6c757d; color:white; }
+.vote-btn:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,0.2); }
+.vote-btn:disabled { opacity:0.6; cursor:not-allowed; }
+.vote-btn.mesa { background:linear-gradient(45deg,#ff7b54,#ff6b35); }
+.vote-btn.alpine { background:linear-gradient(45deg,#74b9ff,#0984e3); }
+.vote-btn.yes { background:linear-gradient(45deg,#00b894,#00a085); }
+.vote-btn.no { background:linear-gradient(45deg,#e17055,#d63031); }
+
+.results { background:#333; border-radius:8px; padding:20px; border:2px solid #555; }
+.result-item { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #555; }
+.result-item:last-child { border-bottom:none; }
+.result-label { font-weight:600; color:#e0e0e0; }
+.result-count { background:#555; padding:5px 12px; border-radius:20px; font-weight:bold; color:#e0e0e0; }
+
+.current-status { text-align:center; margin:20px; padding:15px; background:#1a1a1a; border-radius:8px; font-weight:600; color:#e0e0e0; border:1px solid #404040; }
+.loading { text-align:center; padding:20px; color:#999; }
+
+.section-divider { height:2px; background:linear-gradient(90deg,transparent,#404040,transparent); margin:0 20px; }
+
+.community-voting-header { text-align:center; padding:20px; color:#b0b0b0; font-size:1.1rem; }
+
+.faq-btn { padding:15px 25px; border:none; border-radius:8px; font-size:1.1rem; font-weight:600; cursor:pointer; transition:all 0.3s ease; background:#1a1a1a; color:#e0e0e0; width:100%; text-align:center; margin-bottom:5px; }
+.faq-content { max-height:0; overflow:hidden; transition:max-height 0.3s ease,padding 0.3s ease; padding:0 10px; text-align:center; }
+.faq-btn:hover { background:#222; }
+.faq-content.show { max-height:500px; padding:10px 10px; }
+
 .floating-countdown {
-  font-family: 'Darumadrop One', sans-serif;
   background: transparent;
   color: #ffffff; /* numbers stay visible */
   font-size: 2rem;
@@ -60,8 +93,9 @@ body {font-family:'Darumadrop One', Tahoma, Geneva, Verdana, sans-serif; backgro
   padding: 12px 24px;
   text-align: center;
   letter-spacing: 2px;
-  backdrop-filter: none; 
+  backdrop-filter: none;
   box-shadow: none;
+  /* font-family intentionally inherited from root textual rule above */
 }
 
 .floating-countdown:hover {
@@ -69,16 +103,13 @@ body {font-family:'Darumadrop One', Tahoma, Geneva, Verdana, sans-serif; backgro
   opacity: 0.95;
 }
 
+/* small screens */
 @media(max-width:768px){
-  .voting-section{grid-template-columns:1fr; gap:30px; padding:20px;} 
-  .official-status h1{font-size:1.2rem;} 
-  .status-info{font-size:1rem;}
-  .floating-countdown {
-    font-size: 1.4rem;
-    padding: 8px 16px;
-  }
+  .voting-section { grid-template-columns:1fr; gap:30px; padding:20px; }
+  .official-status h1 { font-size:1.2rem; }
+  .status-info { font-size:1rem; }
+  .floating-countdown { font-size: 1.4rem; padding: 8px 16px; }
 }
-
 </style>
 </head>
 <body>
@@ -86,69 +117,69 @@ body {font-family:'Darumadrop One', Tahoma, Geneva, Verdana, sans-serif; backgro
     <div id="countdown-time">--:--:--</div>
   </div>
 
-<div class="container">
-  <div class="official-status" id="official-status">
-    <h1>Official PEAK Status</h1>
-    <div id="official-images"></div>
-    <div class="status-info" id="official-info">Loading official status...</div>
-    <div class="last-updated" id="official-updated"></div>
-    <div class="footer-thanks">
-      Thanks to <strong>Scoutmaster Noobman!</strong><br>
-      <a href="https://discord.com/channels/1368870708335083650/1405612577454690375" target="_blank" rel="noopener noreferrer">Thread on PEAK Discord</a>
-    </div>
-    <div class="discord-screenshot" id="discord-screenshot" style="display:none;">
-      <div class="discord-screenshot-label"></div>
-      <img id="discord-image" src="" alt="Discord Screenshot" onclick="window.open(this.src, '_blank')" />
-    </div>
-  </div>
-
-  <div class="section-divider"></div>
-
-  <!-- FAQ Button -->
-  <div style="margin:20px;">
-    <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">FAQ / Info</button>
-    <div class="faq-content">
-      <p><a href="https://discord.com/channels/1368870708335083650/1397665010141892758" target="_blank" rel="noopener noreferrer">Nilla's Daily Guides!</a></p>
-      <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612" target="_blank" rel="noopener noreferrer">5ome's Achievement Guide</a></p>
-      <p>🟢 <strong>Yes:</strong> The tomb is fully open, no bugs or glitches required</p>
-      <p>🟡 <strong>Yes but:</strong> The tomb is open, but some part of it (most likely the maze) is blocked off</p>
-      <p>🟠 <strong>Sorta:</strong> The tomb is closed, but a bug in the terrain allows you to jump in it</p>
-      <p>🔴 <strong>No:</strong> The tomb is fully closed off</p>
-      <p><img src="https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Alpinist_Badge.webp" alt="Badge Winter" style="width:1em; height:1em; vertical-align:middle;"> <strong>Alpine:</strong> Today is the Alpine, only the capybara will spawn</p>
-    </div>
-  </div>
-
-  <div class="community-voting-header">Community Voting (Fallback)</div>
-  <div class="current-status" id="status">
-    <div class="loading">Loading community votes...</div>
-  </div>
-
-  <div class="voting-section">
-    <div class="vote-card">
-      <h2>Today's Biome</h2>
-      <div class="voting-buttons">
-        <button class="vote-btn mesa" onclick="vote('biome','mesa')" id="mesa-btn">Mesa</button>
-        <button class="vote-btn alpine" onclick="vote('biome','alpine')" id="alpine-btn">Alpine</button>
+  <div class="container">
+    <div class="official-status" id="official-status">
+      <h1>Official PEAK Status</h1>
+      <div id="official-images"></div>
+      <div class="status-info" id="official-info">Loading official status...</div>
+      <div class="last-updated" id="official-updated"></div>
+      <div class="footer-thanks">
+        Thanks to <strong>Scoutmaster Noobman!</strong><br>
+        <a href="https://discord.com/channels/1368870708335083650/1405612577454690375" target="_blank" rel="noopener noreferrer">Thread on PEAK Discord</a>
       </div>
-      <div class="results">
-        <div class="result-item"><span class="result-label">Mesa</span><span class="result-count" id="mesa-count">-</span></div>
-        <div class="result-item"><span class="result-label">Alpine</span><span class="result-count" id="alpine-count">-</span></div>
+      <div class="discord-screenshot" id="discord-screenshot" style="display:none;">
+        <div class="discord-screenshot-label"></div>
+        <img id="discord-image" src="" alt="Discord Screenshot" onclick="window.open(this.src, '_blank')" />
       </div>
     </div>
 
-    <div class="vote-card">
-      <h2>Is the Tomb Open?</h2>
-      <div class="voting-buttons">
-        <button class="vote-btn yes" onclick="vote('tomb','yes')" id="yes-btn">Yes</button>
-        <button class="vote-btn no" onclick="vote('tomb','no')" id="no-btn">No</button>
+    <div class="section-divider"></div>
+
+    <!-- FAQ Button -->
+    <div style="margin:20px;">
+      <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">FAQ / Info</button>
+      <div class="faq-content">
+        <p><a href="https://discord.com/channels/1368870708335083650/1397665010141892758" target="_blank" rel="noopener noreferrer">Nilla's Daily Guides!</a></p>
+        <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612" target="_blank" rel="noopener noreferrer">5ome's Achievement Guide</a></p>
+        <p>🟢 <strong>Yes:</strong> The tomb is fully open, no bugs or glitches required</p>
+        <p>🟡 <strong>Yes but:</strong> The tomb is open, but some part of it (most likely the maze) is blocked off</p>
+        <p>🟠 <strong>Sorta:</strong> The tomb is closed, but a bug in the terrain allows you to jump in it</p>
+        <p>🔴 <strong>No:</strong> The tomb is fully closed off</p>
+        <p><img src="https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Alpinist_Badge.webp" alt="Badge Winter" style="width:1em; height:1em; vertical-align:middle;"> <strong>Alpine:</strong> Today is the Alpine, only the capybara will spawn</p>
       </div>
-      <div class="results">
-        <div class="result-item"><span class="result-label">Yes</span><span class="result-count" id="yes-count">-</span></div>
-        <div class="result-item"><span class="result-label">No</span><span class="result-count" id="no-count">-</span></div>
+    </div>
+
+    <div class="community-voting-header">Community Voting (Fallback)</div>
+    <div class="current-status" id="status">
+      <div class="loading">Loading community votes...</div>
+    </div>
+
+    <div class="voting-section">
+      <div class="vote-card">
+        <h2>Today's Biome</h2>
+        <div class="voting-buttons">
+          <button class="vote-btn mesa" onclick="vote('biome','mesa')" id="mesa-btn">Mesa</button>
+          <button class="vote-btn alpine" onclick="vote('biome','alpine')" id="alpine-btn">Alpine</button>
+        </div>
+        <div class="results">
+          <div class="result-item"><span class="result-label">Mesa</span><span class="result-count" id="mesa-count">-</span></div>
+          <div class="result-item"><span class="result-label">Alpine</span><span class="result-count" id="alpine-count">-</span></div>
+        </div>
+      </div>
+
+      <div class="vote-card">
+        <h2>Is the Tomb Open?</h2>
+        <div class="voting-buttons">
+          <button class="vote-btn yes" onclick="vote('tomb','yes')" id="yes-btn">Yes</button>
+          <button class="vote-btn no" onclick="vote('tomb','no')" id="no-btn">No</button>
+        </div>
+        <div class="results">
+          <div class="result-item"><span class="result-label">Yes</span><span class="result-count" id="yes-count">-</span></div>
+          <div class="result-item"><span class="result-label">No</span><span class="result-count" id="no-count">-</span></div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
