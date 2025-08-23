@@ -344,7 +344,7 @@ window.onload=function(){
   function getTodayString(){
     const now=new Date(); 
     const utcHour=now.getUTCHours(); 
-    const utcNow=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())); 
+    const utcDate=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())); 
     // CHANGE: rollover is now 22:00 UTC
     if(utcHour < 22) utcDate.setUTCDate(utcDate.getUTCDate()-1); 
     return utcDate.toISOString().split('T')[0];
