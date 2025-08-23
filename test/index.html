@@ -46,16 +46,49 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 .section-divider {height:2px; background:linear-gradient(90deg,transparent,#404040,transparent); margin:0 20px;}
 .community-voting-header {text-align:center; padding:20px; color:#b0b0b0; font-size:1.1rem;}
 .faq-btn{padding:15px 25px;border:none;border-radius:8px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.3s ease;background:#1a1a1a;color:#e0e0e0;width:100%;text-align:center;margin-bottom:5px;}
+.faq-content{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;padding:0 10px;}
 .faq-btn:hover{background:#222;}
 .faq-content{max-height:0;overflow:hidden;transition:all 0.3s ease;padding:0;text-align:center;}
 .faq-content.show{max-height:500px;padding:10px 10px;}
-.floating-countdown {position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.4); color: #ffffff; font-size: 2rem; font-weight: 700; padding: 12px 24px; border-radius: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; letter-spacing: 2px; backdrop-filter: blur(6px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 999; transition: transform 0.3s ease, opacity 0.3s ease;}
-.floating-countdown:hover {transform: translateX(-50%) scale(1.05); opacity: 0.95;}
-@media(max-width:768px){.voting-section{grid-template-columns:1fr; gap:30px; padding:20px;} .official-status h1{font-size:1.2rem;} .status-info{font-size:1rem;}}
+
+.floating-countdown {
+  position: relative;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0,0,0,0.4);
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  padding: 12px 24px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  letter-spacing: 2px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+  
+.floating-countdown:hover {
+  transform: scale(1.05);
+  opacity: 0.95;
+}
+
+@media(max-width:768px){
+  .voting-section{grid-template-columns:1fr; gap:30px; padding:20px;} 
+  .official-status h1{font-size:1.2rem;} 
+  .status-info{font-size:1rem;}
+  .floating-countdown {
+    font-size: 1.4rem;
+    padding: 8px 16px;
+  }
+}
 </style>
 </head>
 <body>
-<div class="floating-countdown" id="countdown">--:--:--</div>
+  <div class="floating-countdown" id="countdown">
+    <div id="countdown-time">--:--:--</div>
+  </div>
 
 <div class="container">
   <div class="official-status" id="official-status">
@@ -124,6 +157,41 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
+// Countdown Timer Function
+function updateCountdown() {
+  const now = new Date();
+  const utcNow = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
+  
+  // Next reset is at 18:00 UTC (6 PM UTC)
+  let nextReset = new Date(utcNow);
+  nextReset.setUTCHours(18, 0, 0, 0);
+  
+  // If it's already past 18:00 UTC today, set to 18:00 UTC tomorrow
+  if (utcNow >= nextReset) {
+    nextReset.setUTCDate(nextReset.getUTCDate() + 1);
+  }
+  
+  const timeDiff = nextReset.getTime() - utcNow.getTime();
+  
+  if (timeDiff <= 0) {
+    document.getElementById('countdown-time').textContent = '00:00:00';
+    return;
+  }
+  
+  const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+  const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+  
+  const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  document.getElementById('countdown-time').textContent = formattedTime;
+}
+
+// Start the countdown and update every second
+function startCountdown() {
+  updateCountdown(); // Initial call
+  setInterval(updateCountdown, 1000);
+}
+
 async function loadOfficialStatus(){
   try {
     const resp = await fetch('./status.json?ts='+new Date().getTime());
@@ -213,72 +281,18 @@ function displayOfficialStatus(status){
 }
 
 window.onload=function(){
+  // Start the countdown timer
+  startCountdown();
+  
   loadOfficialStatus();
   const firebaseConfig={apiKey:"AIzaSyAtK5L-nubV-_i-gEgnP2_gzLi31IGl0zg", authDomain:"peak-map-vote.firebaseapp.com", projectId:"peak-map-vote", storageBucket:"peak-map-vote.firebasestorage.app", messagingSenderId:"317069037525", appId:"1:317069037525:web:43512bf56f7f67c2c5775c"};
-  firebase.initializeApp(firebaseConfig);
-  const db=firebase.firestore();
-  let userVotes={biome:null,tomb:null};
-
-  function getTodayString(){
-    const now=new Date();
-    const utcHour=now.getUTCHours();
-    const utcDate=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()));
-    if(utcHour<18) utcDate.setUTCDate(utcDate.getUTCDate()-1);
-    return utcDate.toISOString().split('T')[0];
-  }
-
-  async function initializeTodayVotes(today){
-    const init={biome:{mesa:0,alpine:0},tomb:{yes:0,no:0}};
-    await db.collection('daily-votes').doc(today).set({votes:init, date:today, lastUpdated: firebase.firestore.FieldValue.serverTimestamp()});
-  }
-
-  function updateDisplay(votes){
-    document.getElementById('mesa-count').textContent=votes.biome.mesa;
-    document.getElementById('alpine-count').textContent=votes.biome.alpine;
-    document.getElementById('yes-count').textContent=votes.tomb.yes;
-    document.getElementById('no-count').textContent=votes.tomb.no;
-    const biomeWinner=votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
-    const tombWinner=votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
-    const total=votes.biome.mesa+votes.biome.alpine+votes.tomb.yes+votes.tomb.no;
-    document.getElementById('status').textContent=total===0?'Community consensus: No votes yet today':`Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
-  }
-
-  function initializeVoting(){
-    const today=getTodayString();
-    const docRef=db.collection('daily-votes').doc(today);
-    docRef.onSnapshot(doc=>{
-      if(doc.exists) updateDisplay(doc.data().votes);
-      else initializeTodayVotes(today);
-    });
-  }
-
-  async function vote(category, option){
-    if(userVotes[category]){
-      alert(`You've already voted ${userVotes[category]} for ${category}!`);
-      return;
-    }
-    const today=getTodayString();
-    const btn=document.getElementById(option+'-btn');
-    try{
-      btn.disabled=true;
-      btn.textContent='Voting...';
-      await db.collection('daily-votes').doc(today).set({
-        votes:{[category]:{[option]:firebase.firestore.FieldValue.increment(1)}},
-        lastUpdated:firebase.firestore.FieldValue.serverTimestamp()
-      }, {merge:true});
-      userVotes[category]=option;
-      btn.style.transform='scale(0.95)';
-      setTimeout(()=>{btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);},200);
-    }catch(e){
-      console.error(e);
-      alert('Error submitting vote.');
-      btn.disabled=false;
-      btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
-    }
-  }
-
-  initializeVoting();
-  window.vote=vote;
+  firebase.initializeApp(firebaseConfig); const db=firebase.firestore(); let userVotes={biome:null,tomb:null};
+  function getTodayString(){const now=new Date(); const utcHour=now.getUTCHours(); const utcDate=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())); if(utcHour<18) utcDate.setUTCDate(utcDate.getUTCDate()-1); return utcDate.toISOString().split('T')[0];}
+  async function initializeTodayVotes(today){const init={biome:{mesa:0,alpine:0},tomb:{yes:0,no:0}}; await db.collection('daily-votes').doc(today).set({votes:init, date:today, lastUpdated: firebase.firestore.FieldValue.serverTimestamp()});}
+  function updateDisplay(votes){document.getElementById('mesa-count').textContent=votes.biome.mesa; document.getElementById('alpine-count').textContent=votes.biome.alpine; document.getElementById('yes-count').textContent=votes.tomb.yes; document.getElementById('no-count').textContent=votes.tomb.no; const biomeWinner=votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied'; const tombWinner=votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear'; const total=votes.biome.mesa+votes.biome.alpine+votes.tomb.yes+votes.tomb.no; document.getElementById('status').textContent=total===0?'Community consensus: No votes yet today':`Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;}
+  function initializeVoting(){const today=getTodayString(); const docRef=db.collection('daily-votes').doc(today); docRef.onSnapshot(doc=>{if(doc.exists) updateDisplay(doc.data().votes); else initializeTodayVotes(today);});}
+  async function vote(category, option){if(userVotes[category]){alert(`You've already voted ${userVotes[category]} for ${category}!`); return;} const today=getTodayString(); const btn=document.getElementById(option+'-btn'); try{btn.disabled=true; btn.textContent='Voting...'; await db.collection('daily-votes').doc(today).set({votes:{[category]:{[option]:firebase.firestore.FieldValue.increment(1)}}, lastUpdated:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}); userVotes[category]=option; btn.style.transform='scale(0.95)'; setTimeout(()=>{btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);},200);}catch(e){console.error(e); alert('Error submitting vote.'); btn.disabled=false; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);}}
+  initializeVoting(); window.vote=vote;
 };
 </script>
 </body>
