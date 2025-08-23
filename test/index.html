@@ -6,29 +6,18 @@
 <title>PEAK Map Info</title>
 <link href="https://fonts.googleapis.com/css2?family=Darumadrop+One&display=swap" rel="stylesheet">
 <style>
-/* minimal reset */
 * { margin:0; padding:0; box-sizing:border-box; }
-
-/* single font declaration with better cascade and unicode range consideration */
-:root {
-  --primary-font: 'Darumadrop One', system-ui, -apple-system, 'Segoe UI', 
-                  Roboto, Helvetica, Arial, 'Segoe UI Emoji', 'Apple Color Emoji', 
-                  'Noto Color Emoji', sans-serif;
-  --font-rendering: antialiased;
-  --font-smoothing: grayscale;
-}
-
-/* apply font to html for better inheritance cascade */
-html {
-  font-family: var(--primary-font);
-  -webkit-font-smoothing: var(--font-rendering);
-  -moz-osx-font-smoothing: var(--font-smoothing);
-  font-feature-settings: 'kern' 1; /* enable kerning if available */
-}
-
-/* ensure inheritance works properly for all text elements */
-body, input, textarea, select, button {
-  font-family: inherit;
+html, body,
+main, header, footer, section, article, nav,
+div, p, span, a, li, ul, ol,
+h1, h2, h3, h4, h5, h6,
+button, label, strong, em, b, i, small,
+sup, sub, summary, details,
+input, textarea, select {
+  font-family: 'Darumadrop One', Tahoma, Geneva, Verdana,
+               'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* page visuals */
@@ -37,37 +26,64 @@ body {
   min-height:100vh;
   padding:0;
   color:#e0e0e0;
+  font-size: 1.1rem;
+  line-height: 1.4;
 }
 
 /* layout container */
-.container { max-width:800px; margin:0 auto; background:#2a2a2a; border-radius:15px; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden; border:1px solid #404040; margin-top:20px; margin-bottom:20px; }
-.official-status { background:linear-gradient(135deg,#4a90e2 0%,#357abd 100%); padding:25px; text-align:center; border-bottom:3px solid #2c5aa0; }
-.official-status h1 { font-size:1.5rem; margin-bottom:10px; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.3); }
-.status-info { font-size:1.2rem; font-weight:600; color:#f0f8ff; text-shadow:0 1px 2px rgba(0,0,0,0.2); }
+.container { 
+  max-width:800px; 
+  margin:15px auto; 
+  background:#2a2a2a; 
+  border-radius:15px; 
+  box-shadow:0 20px 40px rgba(0,0,0,0.3); 
+  overflow:hidden; 
+  border:1px solid #404040; 
+}
+.official-status { 
+  background:linear-gradient(135deg,#4a90e2 0%,#357abd 100%); 
+  padding:15px; 
+  text-align:center; 
+  border-bottom:3px solid #2c5aa0; 
+}
+.official-status h1 { 
+  font-size:2rem; 
+  margin-bottom:8px; 
+  color:white; 
+  text-shadow:0 2px 4px rgba(0,0,0,0.3); 
+}
+.status-info { 
+  font-size:1.3rem; 
+  font-weight:600; 
+  color:#f0f8ff; 
+  text-shadow:0 1px 2px rgba(0,0,0,0.2); 
+  margin-bottom:5px;
+}
 .status-warning { color:#ffa500 !important; }
-#official-images { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; }
+#official-images { display:flex; align-items:center; justify-content:center; gap:5px; margin-bottom:5px; }
 #official-images img { height:64px; width:auto; }
 #official-images span { font-size:64px; line-height:1; vertical-align:middle; }
 
 /* timestamps / footer */
-.last-updated { font-size:0.9rem; margin-top:8px; color:rgba(255,255,255,0.8); }
-.footer-thanks { margin-top:15px; font-size:0.9rem; color:rgba(255,255,255,0.9); }
-.footer-thanks a { color:#87ceeb; text-decoration:none; }
+.last-updated { font-size:1rem; margin-top:5px; color:rgba(255,255,255,0.8); }
+.footer-thanks { margin-top:10px; font-size:1rem; color:rgba(255,255,255,0.9); }
+.footer-thanks a { color:#87ceeb; font-weight:bold; text-decoration:none; }
+.footer-thanks a:visited { color:#87ceeb; font-weight:bold; }
 .footer-thanks a:hover { text-decoration:underline; }
 
 /* discord image */
-.discord-screenshot { margin-top:20px; text-align:center; }
+.discord-screenshot { margin-top:15px; text-align:center; }
 .discord-screenshot img { max-width:100%; max-height:400px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.4); border:2px solid rgba(255,255,255,0.2); cursor:pointer; transition:transform 0.3s ease; }
 .discord-screenshot img:hover { transform:scale(1.02); }
-.discord-screenshot-label { font-size:0.9rem; color:rgba(255,255,255,0.8); margin-bottom:8px; }
+.discord-screenshot-label { font-size:1rem; color:rgba(255,255,255,0.8); margin-bottom:5px; }
 
 /* voting layout */
-.voting-section { padding:40px; display:grid; grid-template-columns:1fr 1fr; gap:40px; }
-.vote-card { background:#1e1e1e; border-radius:12px; padding:30px; border:2px solid #404040; transition:all 0.3s ease; }
-.vote-card:hover { transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.4); }
-.vote-card h2 { font-size:1.8rem; margin-bottom:20px; color:#e0e0e0; text-align:center; }
-.voting-buttons { display:flex; flex-direction:column; gap:15px; margin-bottom:25px; }
-.vote-btn { padding:15px 25px; border:none; border-radius:8px; font-size:1.1rem; font-weight:600; cursor:pointer; transition:all 0.3s ease; background:#6c757d; color:white; }
+.voting-section { padding:20px; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.vote-card { background:#1e1e1e; border-radius:12px; padding:20px; border:2px solid #404040; transition:all 0.3s ease; }
+.vote-card:hover { transform:translateY(-3px); box-shadow:0 10px 25px rgba(0,0,0,0.4); }
+.vote-card h2 { font-size:1.5rem; margin-bottom:15px; color:#e0e0e0; text-align:center; }
+.voting-buttons { display:flex; flex-direction:column; gap:10px; margin-bottom:15px; }
+.vote-btn { padding:12px 20px; border:none; border-radius:8px; font-size:1.2rem; font-weight:600; cursor:pointer; transition:all 0.3s ease; background:#6c757d; color:white; }
 .vote-btn:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,0.2); }
 .vote-btn:disabled { opacity:0.6; cursor:not-allowed; }
 .vote-btn.mesa { background:linear-gradient(45deg,#ff7b54,#ff6b35); }
@@ -75,34 +91,32 @@ body {
 .vote-btn.yes { background:linear-gradient(45deg,#00b894,#00a085); }
 .vote-btn.no { background:linear-gradient(45deg,#e17055,#d63031); }
 
-.results { background:#333; border-radius:8px; padding:20px; border:2px solid #555; }
-.result-item { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #555; }
+.results { background:#333; border-radius:8px; padding:15px; border:2px solid #555; }
+.result-item { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #555; }
 .result-item:last-child { border-bottom:none; }
 .result-label { font-weight:600; color:#e0e0e0; }
-.result-count { background:#555; padding:5px 12px; border-radius:20px; font-weight:bold; color:#e0e0e0; }
+.result-count { background:#555; padding:4px 10px; border-radius:20px; font-weight:bold; color:#e0e0e0; }
 
-.current-status { text-align:center; margin:20px; padding:15px; background:#1a1a1a; border-radius:8px; font-weight:600; color:#e0e0e0; border:1px solid #404040; }
-.loading { text-align:center; padding:20px; color:#999; }
+.current-status { text-align:center; margin:15px; padding:10px; background:#1a1a1a; border-radius:8px; font-weight:600; color:#e0e0e0; border:1px solid #404040; }
+.loading { text-align:center; padding:15px; color:#999; }
 
-.section-divider { height:2px; background:linear-gradient(90deg,transparent,#404040,transparent); margin:0 20px; }
+.section-divider { height:2px; background:linear-gradient(90deg,transparent,#404040,transparent); margin:10px 20px; }
 
-.community-voting-header { text-align:center; padding:20px; color:#b0b0b0; font-size:1.1rem; }
+.community-voting-header { text-align:center; padding:10px; color:#b0b0b0; font-size:1.2rem; }
 
-.faq-btn { padding:15px 25px; border:none; border-radius:8px; font-size:1.1rem; font-weight:600; cursor:pointer; transition:all 0.3s ease; background:#1a1a1a; color:#e0e0e0; width:100%; text-align:center; margin-bottom:5px; }
-.faq-content { max-height:0; overflow:hidden; transition:max-height 0.3s ease,padding 0.3s ease; padding:0 10px; text-align:center; }
+.faq-btn { padding:12px 20px; border:none; border-radius:8px; font-size:1.2rem; font-weight:600; cursor:pointer; transition:all 0.3s ease; background:#1a1a1a; color:#e0e0e0; width:100%; text-align:center; margin-bottom:5px; }
+.faq-content { max-height:0; overflow:hidden; transition:max-height 0.3s ease,padding 0.3s ease; padding:0 8px; text-align:center; font-size:1.1rem; }
 .faq-btn:hover { background:#222; }
-.faq-content.show { max-height:500px; padding:10px 10px; }
+.faq-content.show { max-height:500px; padding:8px 8px; }
 
 .floating-countdown {
   background: transparent;
   color: #ffffff;
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  padding: 12px 24px;
+  padding: 8px 20px;
   text-align: center;
   letter-spacing: 2px;
-  backdrop-filter: none;
-  box-shadow: none;
 }
 
 .floating-countdown:hover {
@@ -110,12 +124,11 @@ body {
   opacity: 0.95;
 }
 
-/* small screens */
 @media(max-width:768px){
-  .voting-section { grid-template-columns:1fr; gap:30px; padding:20px; }
-  .official-status h1 { font-size:1.2rem; }
-  .status-info { font-size:1rem; }
-  .floating-countdown { font-size: 1.4rem; padding: 8px 16px; }
+  .voting-section { grid-template-columns:1fr; gap:15px; padding:15px; }
+  .official-status h1 { font-size:1.7rem; }
+  .status-info { font-size:1.2rem; }
+  .floating-countdown { font-size: 1.8rem; padding: 6px 12px; }
 }
 </style>
 </head>
