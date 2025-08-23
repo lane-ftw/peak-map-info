@@ -44,7 +44,10 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 .loading {text-align:center; padding:20px; color:#999;}
 .section-divider {height:2px; background:linear-gradient(90deg,transparent,#404040,transparent); margin:0 20px;}
 .community-voting-header {text-align:center; padding:20px; color:#b0b0b0; font-size:1.1rem;}
+.faq-content{max-height:0;overflow:hidden;transition:all 0.3s ease;padding:0;}
+.faq-content.show{max-height:500px;padding:10px;}
 @media(max-width:768px){.voting-section{grid-template-columns:1fr; gap:30px; padding:20px;} .official-status h1{font-size:1.2rem;} .status-info{font-size:1rem;}}
+
 </style>
 </head>
 <body>
@@ -64,6 +67,16 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
     </div>
   </div>
   <div class="section-divider"></div>
+<!-- FAQ Button -->
+<div class="voting-section">
+  <button class="vote-btn" tyF</stype="button" onclick="this.nextElementSibling.classList.toggle('show');">
+    FAQ / Info
+  </button>
+  <div class="faq-content">
+    <!-- Put your FAQ text here -->
+    Example: You can vote for the biome or tomb status each day. Community votes are just a fallback if official info is missing.
+  </div>
+</div>
   <div class="community-voting-header">Community Voting (Fallback)</div>
   <div class="current-status" id="status">
     <div class="loading">Loading community votes...</div>
