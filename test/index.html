@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEAK Map Info</title>
+<style>
+* {margin:0;padding:0;box-sizing:border-box;}
+body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%); min-height:100vh; padding:20px; color:#e0e0e0;}
+.container {max-width:800px; margin:0 auto; background:#2a2a2a; border-radius:15px; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden; border:1px solid #404040;}
+.official-status {background:linear-gradient(135deg,#4a90e2 0%,#357abd 100%); padding:25px; text-align:center; border-bottom:3px solid #2c5aa0;}
+.official-status h1 {font-size:1.5rem; margin-bottom:10px; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.3);}
+.status-info {font-size:1.2rem; font-weight:600; color:#f0f8ff; text-shadow:0 1px 2px rgba(0,0,0,0.2);}
+#official-images {display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px;}
+#official-images img {height:64px; width:auto;}
+#official-images span {font-size:64px; line-height:1; vertical-align:middle;}
+.last-updated {font-size:0.9rem; margin-top:8px; color:rgba(255,255,255,0.8);}
+.voting-section {padding:40px; display:grid; grid-template-columns:1fr 1fr; gap:40px;}
+.vote-card {background:#1e1e1e; border-radius:12px; padding:30px; border:2px solid #404040; transition:all 0.3s ease;}
+.vote-card:hover {transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.4);}
+.vote-card h2 {font-size:1.8rem; margin-bottom:20px; color:#e0e0e0; text-align:center;}
+.voting-buttons {display:flex; flex-direction:column; gap:15px; margin-bottom:25px;}
+.vote-btn {padding:15px 25px; border:none; border-radius:8px; font-size:1.1rem; font-weight:600; cursor:pointer; transition:all 0.3s ease; background:#6c757d; color:white;}
+.vote-btn:hover {transform:translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,0.2);}
+.vote-btn:disabled {opacity:0.6; cursor:not-allowed;}
+.vote-btn.mesa {background:linear-gradient(45deg,#ff7b54,#ff6b35);}
+.vote-btn.alpine {background:linear-gradient(45deg,#74b9ff,#0984e3);}
+.vote-btn.yes {background:linear-gradient(45deg,#00b894,#00a085);}
+.vote-btn.no {background:linear-gradient(45deg,#e17055,#d63031);}
+.results {background:#333; border-radius:8px; padding:20px; border:2px solid #555;}
+.result-item {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #555;}
+.result-item:last-child {border-bottom:none;}
+.result-label {font-weight:600; color:#e0e0e0;}
+.result-count {background:#555; padding:5px 12px; border-radius:20px; font-weight:bold; color:#e0e0e0;}
+.current-status {text-align:center; margin:20px; padding:15px; background:#1a1a1a; border-radius:8px; font-weight:600; color:#e0e0e0; border:1px solid #404040;}
+.loading {text-align:center; padding:20px; color:#999;}
+.section-divider {height:2px; background:linear-gradient(90deg,transparent,#404040,transparent); margin:0 20px;}
+.community-voting-header {text-align:center; padding:20px; color:#b0b0b0; font-size:1.1rem;}
+@media(max-width:768px){.voting-section{grid-template-columns:1fr; gap:30px; padding:20px;} .official-status h1{font-size:1.2rem;} .status-info{font-size:1rem;}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="official-status" id="official-status">
+    <h1>Official PEAK Status</h1>
+    <div id="official-images"></div>
+    <div class="status-info" id="official-info">Loading official status...</div>
+    <div class="last-updated" id="official-updated"></div>
+    <div class="footer-thanks">
+      Thanks to <strong>Scoutmaster Noobman!</strong><br>
+      <a href="https://discord.com/channels/1368870708335083650/1405612577454690375" target="_blank" rel="noopener noreferrer">Thread on PEAK Discord</a>
+    </div>
+  </div>
+  <div class="section-divider"></div>
+  <div class="community-voting-header">Community Voting (Fallback)</div>
+  <div class="current-status" id="status">
+    <div class="loading">Loading community votes...</div>
+  </div>
+  <div class="voting-section">
+    <div class="vote-card">
+      <h2>Today's Biome</h2>
+      <div class="voting-buttons">
+        <button class="vote-btn mesa" onclick="vote('biome','mesa')" id="mesa-btn">Mesa</button>
+        <button class="vote-btn alpine" onclick="vote('biome','alpine')" id="alpine-btn">Alpine</button>
+      </div>
+      <div class="results">
+        <div class="result-item"><span class="result-label">Mesa</span><span class="result-count" id="mesa-count">-</span></div>
+        <div class="result-item"><span class="result-label">Alpine</span><span class="result-count" id="alpine-count">-</span></div>
+      </div>
+    </div>
+
+    <div class="vote-card">
+      <h2>Is the Tomb Open?</h2>
+      <div class="voting-buttons">
+        <button class="vote-btn yes" onclick="vote('tomb','yes')" id="yes-btn">Yes</button>
+        <button class="vote-btn no" onclick="vote('tomb','no')" id="no-btn">No</button>
+      </div>
+      <div class="results">
+        <div class="result-item"><span class="result-label">Yes</span><span class="result-count" id="yes-count">-</span></div>
+        <div class="result-item"><span class="result-label">No</span><span class="result-count" id="no-count">-</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<script>
+async function loadOfficialStatus(){
+  try {
+    const resp = await fetch('./status.json?ts=' + new Date().getTime());
+    if(resp.ok) displayOfficialStatus(await resp.json());
+    else document.getElementById('official-info').textContent='Official status not available';
+  } catch(e){
+    console.error(e);
+    document.getElementById('official-info').textContent='Error loading official status';
+  }
+}
+
+function displayOfficialStatus(status){
+  const infoDiv = document.getElementById('official-info');
+  const imagesDiv = document.getElementById('official-images');
+  const updatedDiv = document.getElementById('official-updated');
+
+  imagesDiv.innerHTML = '';
+
+  // Biome image
+  if(status.biomeImage){
+    const biomeImg = document.createElement('img');
+    biomeImg.src = status.biomeImage;
+    biomeImg.alt = status.biome || 'Biome';
+    imagesDiv.appendChild(biomeImg);
+  }
+
+// Tomb emoji
+let tombChar = '';
+switch(status.tomb){
+  case 'yes': tombChar='🟢'; break;
+  case 'partial': tombChar='🟡'; break;
+  case 'glitch': tombChar='🟠'; break;
+  case 'no': tombChar='🔴'; break;
+  case 'alpine': tombChar='🔵'; break;
+}
+if(tombChar){
+  const tombSpan = document.createElement('span');
+  tombSpan.textContent = tombChar;
+  tombSpan.style.fontSize = '64px';      // force same height as images
+  tombSpan.style.lineHeight = '64px';    // align vertically
+  tombSpan.style.display = 'inline-block';
+  imagesDiv.appendChild(tombSpan);
+}
+
+  // Text below
+  const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
+  let tombText = 'Unknown';
+  switch(status.tomb){
+    case 'yes': tombText='Open'; break;
+    case 'partial': tombText='Partially Open'; break;
+    case 'glitch': tombText='Glitch Access Only'; break;
+    case 'no': tombText='Closed'; break;
+    case 'alpine': tombText='Alpine'; break;
+  }
+  infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
+
+  // Last updated
+  if(status.lastUpdated){
+    const lastUpdatedDate = new Date(status.lastUpdated);
+    updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
+  }
+}
+
+// ===== COMMUNITY VOTING =====
+window.onload = function(){
+  loadOfficialStatus();
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAtK5L-nubV-_i-gEgnP2_gzLi31IGl0zg",
+    authDomain: "peak-map-vote.firebaseapp.com",
+    projectId: "peak-map-vote",
+    storageBucket: "peak-map-vote.firebasestorage.app",
+    messagingSenderId: "317069037525",
+    appId: "1:317069037525:web:43512bf56f7f67c2c5775c"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  let userVotes = {biome:null,tomb:null};
+
+  function getTodayString(){
+    const now = new Date();
+    const utcHour = now.getUTCHours();
+    const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    if(utcHour<18) utcDate.setUTCDate(utcDate.getUTCDate()-1);
+    return utcDate.toISOString().split('T')[0];
+  }
+
+  async function initializeTodayVotes(today){
+    const init = {biome:{mesa:0,alpine:0},tomb:{yes:0,no:0}};
+    await db.collection('daily-votes').doc(today).set({
+      votes:init,
+      date:today,
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
+
+  function updateDisplay(votes){
+    document.getElementById('mesa-count').textContent=votes.biome.mesa;
+    document.getElementById('alpine-count').textContent=votes.biome.alpine;
+    document.getElementById('yes-count').textContent=votes.tomb.yes;
+    document.getElementById('no-count').textContent=votes.tomb.no;
+
+    const biomeWinner = votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
+    const tombWinner = votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
+    const total = votes.biome.mesa+votes.biome.alpine+votes.tomb.yes+votes.tomb.no;
+    document.getElementById('status').textContent=total===0?'Community consensus: No votes yet today':`Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
+  }
+
+  function initializeVoting(){
+    const today=getTodayString();
+    const docRef=db.collection('daily-votes').doc(today);
+    docRef.onSnapshot(doc=>{
+      if(doc.exists) updateDisplay(doc.data().votes);
+      else initializeTodayVotes(today);
+    });
+  }
+
+async function vote(category, option) {
+  if (userVotes[category]) {
+    alert(`You've already voted ${userVotes[category]} for ${category}!`);
+    return;
+  }
+
+  const today = getTodayString();
+  const btn = document.getElementById(option + '-btn');
+
+  try {
+    btn.disabled = true;
+    btn.textContent = 'Voting...';
+
+    await db.collection('daily-votes').doc(today).set({
+      votes: {
+        [category]: {
+          [option]: firebase.firestore.FieldValue.increment(1)
+        }
+      },
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }); // 👈 ensures votes stays a map
+
+    userVotes[category] = option;
+    btn.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      btn.style.transform = '';
+      btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
+    }, 200);
+
+  } catch (e) {
+    console.error(e);
+    alert('Error submitting vote.');
+    btn.disabled = false;
+    btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
+  }
+}
+
+
+  initializeVoting();
+  window.vote=vote;
+};
+</script>
+</body>
+</html>
