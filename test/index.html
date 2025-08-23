@@ -4,17 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PEAK Map Info</title>
-<link href="https://fonts.googleapis.com/css2?family=Darumadrop+One&display=swap" rel="stylesheet">
 <style>
-/* Reset & safe font for all visible text */
-body, h1,h2,h3,h4,h5,h6, p, span, strong, em, div, button, a, label, li {
-    font-family: 'Darumadrop One', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* General resets */
 * {margin:0;padding:0;box-sizing:border-box;}
-body {background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%); min-height:100vh; padding:0; color:#e0e0e0;}
-.container {max-width:800px; margin:20px auto; background:#2a2a2a; border-radius:15px; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden; border:1px solid #404040;}
+body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%); min-height:100vh; padding:20px; color:#e0e0e0;}
+.container {max-width:800px; margin:0 auto; background:#2a2a2a; border-radius:15px; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden; border:1px solid #404040;}
 .official-status {background:linear-gradient(135deg,#4a90e2 0%,#357abd 100%); padding:25px; text-align:center; border-bottom:3px solid #2c5aa0;}
 .official-status h1 {font-size:1.5rem; margin-bottom:10px; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.3);}
 .status-info {font-size:1.2rem; font-weight:600; color:#f0f8ff; text-shadow:0 1px 2px rgba(0,0,0,0.2);}
@@ -22,8 +15,8 @@ body {background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%); min-height:10
 #official-images {display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px;}
 #official-images img {height:64px; width:auto;}
 #official-images span {font-size:64px; line-height:1; vertical-align:middle;}
-.last-updated {font-size:0.9rem; margin-top:8px; color:rgba(255,255,255,0.8);}
-.footer-thanks {margin-top:15px; font-size:0.9rem; color:rgba(255,255,255,0.9);}
+.last-updated { font-size:0.9rem; margin-top:8px; margin-bottom:0; color:rgba(255,255,255,0.8); }
+.footer-thanks { margin-top:4px; font-size:0.9rem; color:rgba(255,255,255,0.9); }
 .footer-thanks a {color:#87ceeb; text-decoration:none;}
 .footer-thanks a:hover {text-decoration:underline;}
 .discord-screenshot {margin-top:20px; text-align:center;}
@@ -51,36 +44,10 @@ body {background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%); min-height:10
 .loading {text-align:center; padding:20px; color:#999;}
 .section-divider {height:2px; background:linear-gradient(90deg,transparent,#404040,transparent); margin:0 20px;}
 .community-voting-header {text-align:center; padding:20px; color:#b0b0b0; font-size:1.1rem;}
-.faq-btn{padding:15px 25px;border:none;border-radius:8px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.3s ease;background:#1a1a1a;color:#e0e0e0;width:100%;text-align:center;margin-bottom:5px;}
-.faq-content{max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease;padding:0 10px;text-align:center;}
-.faq-content.show{max-height:500px;padding:10px 10px;}
-.floating-countdown {
-  font-family: inherit;
-  background: transparent;
-  color: #ffffff;
-  font-size: 2rem;
-  font-weight: 700;
-  padding: 12px 24px;
-  text-align: center;
-  letter-spacing: 2px;
-  backdrop-filter: none; 
-  box-shadow: none;
-}
-.floating-countdown:hover {transform: scale(1.05); opacity: 0.95;}
-@media(max-width:768px){
-  .voting-section{grid-template-columns:1fr; gap:30px; padding:20px;} 
-  .official-status h1{font-size:1.2rem;} 
-  .status-info{font-size:1rem;}
-  .floating-countdown {font-size: 1.4rem; padding: 8px 16px;}
-}
+@media(max-width:768px){.voting-section{grid-template-columns:1fr; gap:30px; padding:20px;} .official-status h1{font-size:1.2rem;} .status-info{font-size:1rem;}}
 </style>
-<link rel="icon" href="/favicon.ico">
 </head>
 <body>
-  <div class="floating-countdown" id="countdown">
-    <div id="countdown-time">--:--:--</div>
-  </div>
-
 <div class="container">
   <div class="official-status" id="official-status">
     <h1>Official PEAK Status</h1>
@@ -96,27 +63,11 @@ body {background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%); min-height:10
       <img id="discord-image" src="" alt="Discord Screenshot" onclick="window.open(this.src, '_blank')" />
     </div>
   </div>
-
   <div class="section-divider"></div>
-
-  <div style="margin:20px;">
-    <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">FAQ / Info</button>
-    <div class="faq-content">
-      <p><a href="https://discord.com/channels/1368870708335083650/1397665010141892758" target="_blank" rel="noopener noreferrer">Nilla's Daily Guides!</a></p>
-      <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612" target="_blank" rel="noopener noreferrer">5ome's Achievement Guide</a></p>
-      <p>🟢 <strong>Yes:</strong> The tomb is fully open, no bugs or glitches required</p>
-      <p>🟡 <strong>Yes but:</strong> The tomb is open, but some part of it (most likely the maze) is blocked off</p>
-      <p>🟠 <strong>Sorta:</strong> The tomb is closed, but a bug in the terrain allows you to jump in it</p>
-      <p>🔴 <strong>No:</strong> The tomb is fully closed off</p>
-      <p><img src="https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Alpinist_Badge.webp" alt="Badge Winter" style="width:1em; height:1em; vertical-align:middle;"> <strong>Alpine:</strong> Today is the Alpine, only the capybara will spawn</p>
-    </div>
-  </div>
-
   <div class="community-voting-header">Community Voting (Fallback)</div>
   <div class="current-status" id="status">
     <div class="loading">Loading community votes...</div>
   </div>
-
   <div class="voting-section">
     <div class="vote-card">
       <h2>Today's Biome</h2>
@@ -144,10 +95,192 @@ body {background: linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%); min-height:10
   </div>
 </div>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
 <script>
-// Your existing JS logic here (unchanged)
+async function loadOfficialStatus(){
+  try {
+    const resp = await fetch('./status.json?ts=' + new Date().getTime());
+    if(resp.ok) displayOfficialStatus(await resp.json());
+    else document.getElementById('official-info').textContent='Official status not available';
+  } catch(e){
+    console.error(e);
+    document.getElementById('official-info').textContent='Error loading official status';
+  }
+}
+
+function displayOfficialStatus(status){
+  const infoDiv = document.getElementById('official-info');
+  const imagesDiv = document.getElementById('official-images');
+  const updatedDiv = document.getElementById('official-updated');
+  const screenshotDiv = document.getElementById('discord-screenshot');
+  const screenshotImg = document.getElementById('discord-image');
+
+  // Check if status is from today
+  const today = new Date().toISOString().split('T')[0];
+  const statusDate = status.date;
+  
+  if (statusDate !== today) {
+    infoDiv.textContent = `Status from ${statusDate} (not today)`;
+    infoDiv.classList.add('status-warning');
+    // Still show the rest of the data, just with warning
+  } else {
+    infoDiv.classList.remove('status-warning');
+  }
+
+  imagesDiv.innerHTML = '';
+
+  // Biome image (unchanged)
+  if(status.biomeImage){
+    const biomeImg = document.createElement('img');
+    biomeImg.src = status.biomeImage;
+    biomeImg.alt = status.biome || 'Biome';
+    imagesDiv.appendChild(biomeImg);
+  }
+
+  // Tomb emoji (unchanged)
+  let tombChar = '';
+  switch(status.tomb){
+    case 'yes': tombChar='🟢'; break;
+    case 'partial': tombChar='🟡'; break;
+    case 'glitch': tombChar='🟠'; break;
+    case 'no': tombChar='🔴'; break;
+    case 'alpine': tombChar='🔵'; break;
+  }
+  if(tombChar){
+    const tombSpan = document.createElement('span');
+    tombSpan.textContent = tombChar;
+    tombSpan.style.fontSize = '64px';
+    tombSpan.style.lineHeight = '64px';
+    tombSpan.style.display = 'inline-block';
+    imagesDiv.appendChild(tombSpan);
+  }
+
+  // Text below (only update if not showing warning)
+  if (statusDate === today) {
+    const biomeText = status.biome ? status.biome.charAt(0).toUpperCase() + status.biome.slice(1) : 'Unknown';
+    let tombText = 'Unknown';
+    switch(status.tomb){
+      case 'yes': tombText='Open'; break;
+      case 'partial': tombText='Partially Open'; break;
+      case 'glitch': tombText='Glitch Access Only'; break;
+      case 'no': tombText='Closed'; break;
+      case 'alpine': tombText='Alpine'; break;
+    }
+    infoDiv.textContent = `${biomeText} | Tomb ${tombText}`;
+  }
+
+  // Last updated
+  if(status.lastUpdated){
+    const lastUpdatedDate = new Date(status.lastUpdated);
+    updatedDiv.textContent = `Last updated: ${lastUpdatedDate.toUTCString()}`;
+  }
+
+  // Discord screenshot (new)
+  if(status.currentImage){
+    screenshotImg.src = status.currentImage;
+    screenshotDiv.style.display = 'block';
+  } else {
+    screenshotDiv.style.display = 'none';
+  }
+}
+
+// ===== COMMUNITY VOTING (unchanged) =====
+window.onload = function(){
+  loadOfficialStatus();
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAtK5L-nubV-_i-gEgnP2_gzLi31IGl0zg",
+    authDomain: "peak-map-vote.firebaseapp.com",
+    projectId: "peak-map-vote",
+    storageBucket: "peak-map-vote.firebasestorage.app",
+    messagingSenderId: "317069037525",
+    appId: "1:317069037525:web:43512bf56f7f67c2c5775c"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  let userVotes = {biome:null,tomb:null};
+
+  function getTodayString(){
+    const now = new Date();
+    const utcHour = now.getUTCHours();
+    const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    if(utcHour<18) utcDate.setUTCDate(utcDate.getUTCDate()-1);
+    return utcDate.toISOString().split('T')[0];
+  }
+
+  async function initializeTodayVotes(today){
+    const init = {biome:{mesa:0,alpine:0},tomb:{yes:0,no:0}};
+    await db.collection('daily-votes').doc(today).set({
+      votes:init,
+      date:today,
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
+
+  function updateDisplay(votes){
+    document.getElementById('mesa-count').textContent=votes.biome.mesa;
+    document.getElementById('alpine-count').textContent=votes.biome.alpine;
+    document.getElementById('yes-count').textContent=votes.tomb.yes;
+    document.getElementById('no-count').textContent=votes.tomb.no;
+
+    const biomeWinner = votes.biome.mesa>votes.biome.alpine?'Mesa':votes.biome.alpine>votes.biome.mesa?'Alpine':'Tied';
+    const tombWinner = votes.tomb.yes>votes.tomb.no?'Open':votes.tomb.no>votes.tomb.yes?'Closed':'Unclear';
+    const total = votes.biome.mesa+votes.biome.alpine+votes.tomb.yes+votes.tomb.no;
+    document.getElementById('status').textContent=total===0?'Community consensus: No votes yet today':`Community consensus: Biome is ${biomeWinner} | Tomb is ${tombWinner}`;
+  }
+
+  function initializeVoting(){
+    const today=getTodayString();
+    const docRef=db.collection('daily-votes').doc(today);
+    docRef.onSnapshot(doc=>{
+      if(doc.exists) updateDisplay(doc.data().votes);
+      else initializeTodayVotes(today);
+    });
+  }
+
+async function vote(category, option) {
+  if (userVotes[category]) {
+    alert(`You've already voted ${userVotes[category]} for ${category}!`);
+    return;
+  }
+
+  const today = getTodayString();
+  const btn = document.getElementById(option + '-btn');
+
+  try {
+    btn.disabled = true;
+    btn.textContent = 'Voting...';
+
+    await db.collection('daily-votes').doc(today).set({
+      votes: {
+        [category]: {
+          [option]: firebase.firestore.FieldValue.increment(1)
+        }
+      },
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    userVotes[category] = option;
+    btn.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      btn.style.transform = '';
+      btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
+    }, 200);
+
+  } catch (e) {
+    console.error(e);
+    alert('Error submitting vote.');
+    btn.disabled = false;
+    btn.textContent = option.charAt(0).toUpperCase() + option.slice(1);
+  }
+}
+
+  initializeVoting();
+  window.vote=vote;
+};
 </script>
 </body>
 </html>
