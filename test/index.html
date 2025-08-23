@@ -262,6 +262,27 @@ function displayOfficialStatus(status){
       case 'alpine': tombText='Alpine'; break;
     }
     infoDiv.textContent=`${biomeText} | Tomb ${tombText}`;
+    infoDiv.style.display = 'flex';
+    infoDiv.style.alignItems = 'center';
+    infoDiv.style.justifyContent = 'center';
+    infoDiv.style.gap = '0.5rem';
+    
+    // Clear any existing content and rebuild with proper centering
+    infoDiv.innerHTML = '';
+    
+    const leftText = document.createElement('span');
+    leftText.textContent = biomeText;
+    
+    const pipe = document.createElement('span');
+    pipe.textContent = '|';
+    pipe.style.margin = '0 0.5rem';
+    
+    const rightText = document.createElement('span');
+    rightText.textContent = `Tomb ${tombText}`;
+    
+    infoDiv.appendChild(leftText);
+    infoDiv.appendChild(pipe);
+    infoDiv.appendChild(rightText);
   }
 
   if(status.lastUpdated){
