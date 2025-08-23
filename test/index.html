@@ -113,29 +113,29 @@ body {
 .faq-btn:hover { background:#222; }
 .faq-content.show { max-height:500px; padding:6px 6px; }
 
-
+.faq-btn-container {
+  position: relative;  /* allows popup to position relative to container */
+  display: inline-block;
+}
 .faq-btn-popup {
   position: relative;
   overflow: hidden;
 }
-
 .faq-popup {
   position: absolute;
-  bottom: 0;           /* align with bottom of button */
-  right: 0;            /* start behind the button */
+  bottom: 0;           /* start behind the button */
+  right: 0;            /* align right edge of button */
   width: 140px;
   opacity: 0;
   pointer-events: none;
-  transform: translate(0, 50%);  /* start partially behind the button */
+  transform: translate(0, 50%);  /* start partially hidden */
   transition: opacity 0.4s ease, transform 0.4s ease;
   z-index: 1000;
 }
-
-div[style*="position: relative"]:hover .faq-popup {
+.faq-btn-container:hover .faq-popup {
   opacity: 1;
   transform: translate(30px, -60%); /* slide up and right */
 }
-
 /* FAQ links styling (bold, readable) */
 .faq-content a {
   font-weight: bold;
@@ -207,23 +207,23 @@ div[style*="position: relative"]:hover .faq-popup {
 
     <div class="section-divider"></div>
 
-    <!-- FAQ Button -->
-<div style="position: relative; display: inline-block; margin: 20px;">
+<!-- FAQ Button Container -->
+<div class="faq-btn-container" style="margin: 20px;">
   <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
     FAQ / Info
   </button>
   <img src="images/cc.png" alt="CC says HI!" class="faq-popup">
 </div>
 
+<!-- FAQ Content -->
 <div class="faq-content">
-    <p><a href="https://discord.com/channels/1368870708335083650/1397665010141892758" target="_blank" rel="noopener noreferrer">Nilla's Daily Guides!</a></p>
-    <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612"
-    <p>🟢 <strong>Yes:</strong> The tomb is fully open, no bugs or glitches required</p>
-    <p>🟡 <strong>Yes but:</strong> The tomb is open, but some part of it (most likely the maze) is blocked off</p>
-    <p>🟠 <strong>Sorta:</strong> The tomb is closed, but a bug in the terrain allows you to jump in it</p>
-    <p>🔴 <strong>No:</strong> The tomb is fully closed off</p>
-    <p><img src="https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Alpinist_Badge.webp" alt="Badge Winter" style="width:1em; height:1em; vertical-align:middle;"> <strong>Alpine:</strong> Today is the Alpine, only the capybara will spawn</p>
-  </div>
+  <p><a href="https://discord.com/channels/1368870708335083650/1397665010141892758" target="_blank" rel="noopener noreferrer">Nilla's Daily Guides!</a></p>
+  <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612" target="_blank" rel="noopener noreferrer">5ome's Achievement Guide</a></p>
+  <p>🟢 <strong>Yes:</strong> The tomb is fully open, no bugs or glitches required</p>
+  <p>🟡 <strong>Yes but:</strong> The tomb is open, but some part of it (most likely the maze) is blocked off</p>
+  <p>🟠 <strong>Sorta:</strong> The tomb is closed, but a bug in the terrain allows you to jump in it</p>
+  <p>🔴 <strong>No:</strong> The tomb is fully closed off</p>
+  <p><img src="https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Alpinist_Badge.webp" alt="Badge Winter" style="width:1em; height:1em; vertical-align:middle;"> <strong>Alpine:</strong> Today is the Alpine, only the capybara will spawn</p>
 </div>
 
     <div class="community-voting-header">Community Voting (Fallback)</div>
