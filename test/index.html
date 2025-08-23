@@ -49,10 +49,35 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 .faq-btn:hover{background:#222;}
 .faq-content{max-height:0;overflow:hidden;transition:all 0.3s ease;padding:0;text-align:center;}
 .faq-content.show{max-height:500px;padding:10px 10px;}
+  .floating-countdown {
+  position: fixed;          /* stays on screen while scrolling */
+  top: 20px;                /* distance from top */
+  left: 50%;                /* center horizontally */
+  transform: translateX(-50%); /* adjust for true center */
+  background: rgba(0,0,0,0.4); /* semi-transparent */
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 15px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  letter-spacing: 2px;
+  backdrop-filter: blur(6px); /* frosted glass effect */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  z-index: 999;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+  
+.floating-countdown:hover {
+  transform: translateX(-50%) scale(1.05);
+  opacity: 0.95;
+}
 @media(max-width:768px){.voting-section{grid-template-columns:1fr; gap:30px; padding:20px;} .official-status h1{font-size:1.2rem;} .status-info{font-size:1rem;}}
 </style>
 </head>
 <body>
+  <div class="floating-countdown" id="countdown">--:--:--</div>
 <div class="container">
   <div class="official-status" id="official-status">
     <h1>Official PEAK Status</h1>
