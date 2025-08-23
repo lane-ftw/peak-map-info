@@ -46,8 +46,7 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 .community-voting-header {text-align:center; padding:20px; color:#b0b0b0; font-size:1.1rem;}
 .faq-content{max-height:0;overflow:hidden;transition:all 0.3s ease;padding:0;}
 .faq-content.show{max-height:500px;padding:10px;}
-.faq-btn{padding:15px 25px;border:none;border-radius:8px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.3s ease;background:#6c757d;color:white;width:100%;text-align:left;}
-
+.faq-btn{width:100%;text-align:left;} 
 @media(max-width:768px){.voting-section{grid-template-columns:1fr; gap:30px; padding:20px;} .official-status h1{font-size:1.2rem;} .status-info{font-size:1rem;}}
 
 </style>
@@ -68,16 +67,14 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
       <img id="discord-image" src="" alt="Discord Screenshot" onclick="window.open(this.src, '_blank')" />
     </div>
   </div>
-  <div class="section-divider"></div>
 <!-- FAQ Button -->
 <div class="voting-section">
-  <button class="vote-btn" tyF</stype="button" onclick="this.nextElementSibling.classList.toggle('show');">
+  <button class="vote-btn faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
     FAQ / Info
   </button>
   <div class="faq-content">
-    <!-- Put your FAQ text here -->
-    Example: You can vote for the biome or tomb status each day. Community votes are just a fallback if official info is missing.
-  </div>
+lorem  </div>
+</div>
 </div>
   <div class="community-voting-header">Community Voting (Fallback)</div>
   <div class="current-status" id="status">
