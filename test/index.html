@@ -121,23 +121,83 @@ body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: l
 <script>
 async function loadOfficialStatus(){
   try {const resp = await fetch('./status.json?ts='+new Date().getTime()); if(resp.ok) displayOfficialStatus(await resp.json()); else document.getElementById('official-info').textContent='Official status not available';} catch(e){console.error(e); document.getElementById('official-info').textContent='Error loading official status';}
-}
 function displayOfficialStatus(status){
   const infoDiv=document.getElementById('official-info');
   const imagesDiv=document.getElementById('official-images');
   const updatedDiv=document.getElementById('official-updated');
   const screenshotDiv=document.getElementById('discord-screenshot');
   const screenshotImg=document.getElementById('discord-image');
-  const today=new Date().toISOString().split('T')[0]; const statusDate=status.date;
-  if(statusDate!==today){infoDiv.textContent=`Status from ${statusDate} (not today)`; infoDiv.classList.add('status-warning');} else{infoDiv.classList.remove('status-warning');}
+  const today=new Date().toISOString().split('T')[0];
+  const statusDate=status.date;
+
+  if(statusDate!==today){
+    infoDiv.textContent=`Status from ${statusDate} (not today)`;
+    infoDiv.classList.add('status-warning');
+  } else {
+    infoDiv.classList.remove('status-warning');
+  }
+
   imagesDiv.innerHTML='';
-  if(status.biomeImage){const biomeImg=document.createElement('img'); biomeImg.src=status.biomeImage; biomeImg.alt=status.biome||'Biome'; imagesDiv.appendChild(biomeImg);}
-  let tombChar=''; switch(status.tomb){case 'yes': tombChar='🟢'; break; case 'partial': tombChar='🟡'; break; case 'glitch': tombChar='🟠'; break; case 'no': tombChar='🔴'; break; case 'alpine': tombChar='🔵'; break;}
-  if(tombChar){const tombSpan=document.createElement('span'); tombSpan.textContent=tombChar; tombSpan.style.fontSize='64px'; tombSpan.style.lineHeight='64px'; tombSpan.style.display='inline-block'; imagesDiv.appendChild(tombSpan);}
-  if(statusDate===today){const biomeText=status.biome?status.biome.charAt(0).toUpperCase()+status.biome.slice(1):'Unknown'; let tombText='Unknown'; switch(status.tomb){case 'yes': tombText='Open'; break; case 'partial': tombText='Partially Open'; break; case 'glitch': tombText='Glitch Access Only'; break; case 'no': tombText='Closed'; break; case 'alpine': tombText='Alpine'; break;} infoDiv.textContent=`${biomeText} | Tomb ${tombText}`;}
-  if(status.lastUpdated){const lastUpdatedDate=new Date(status.lastUpdated); updatedDiv.textContent=`Last updated: ${lastUpdatedDate.toUTCString()}`;}
-  if(status.currentImage){screenshotImg.src=status.currentImage; screenshotDiv.style.display='block';} else{screenshotDiv.style.display='none';}
+
+  if(status.biomeImage){
+    const biomeImg=document.createElement('img');
+    biomeImg.src=status.biomeImage;
+    biomeImg.alt=status.biome||'Biome';
+    imagesDiv.appendChild(biomeImg);
+  }
+
+  if(status.tomb === 'alpine'){
+    const tombImg=document.createElement('img');
+    tombImg.src='./images/cappy.png';
+    tombImg.alt='Alpine Capybara';
+    tombImg.style.width='64px';
+    tombImg.style.height='64px';
+    tombImg.style.display='inline-block';
+    imagesDiv.appendChild(tombImg);
+  } else {
+    let tombChar='';
+    switch(status.tomb){
+      case 'yes': tombChar='🟢'; break;
+      case 'partial': tombChar='🟡'; break;
+      case 'glitch': tombChar='🟠'; break;
+      case 'no': tombChar='🔴'; break;
+    }
+    if(tombChar){
+      const tombSpan=document.createElement('span');
+      tombSpan.textContent=tombChar;
+      tombSpan.style.fontSize='64px';
+      tombSpan.style.lineHeight='64px';
+      tombSpan.style.display='inline-block';
+      imagesDiv.appendChild(tombSpan);
+    }
+  }
+
+  if(statusDate===today){
+    const biomeText=status.biome?status.biome.charAt(0).toUpperCase()+status.biome.slice(1):'Unknown';
+    let tombText='Unknown';
+    switch(status.tomb){
+      case 'yes': tombText='Open'; break;
+      case 'partial': tombText='Partially Open'; break;
+      case 'glitch': tombText='Glitch Access Only'; break;
+      case 'no': tombText='Closed'; break;
+      case 'alpine': tombText='Alpine'; break;
+    }
+    infoDiv.textContent=`${biomeText} | Tomb ${tombText}`;
+  }
+
+  if(status.lastUpdated){
+    const lastUpdatedDate=new Date(status.lastUpdated);
+    updatedDiv.textContent=`Last updated: ${lastUpdatedDate.toUTCString()}`;
+  }
+
+  if(status.currentImage){
+    screenshotImg.src=status.currentImage;
+    screenshotDiv.style.display='block';
+  } else {
+    screenshotDiv.style.display='none';
+  }
 }
+
 
 window.onload=function(){
   loadOfficialStatus();
