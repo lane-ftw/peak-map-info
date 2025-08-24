@@ -223,38 +223,18 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
-// Countdown Timer Function
 function updateCountdown() {
   const now = new Date();
-  const utcNow = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
-  
-  // Next reset is at 22:00 UTC
-  let nextReset = new Date(utcNow);
-  nextReset.setUTCHours(22, 0, 0, 0);
-  
-  if (utcNow >= nextReset) {
-    nextReset.setUTCDate(nextReset.getUTCDate() + 1);
-  }
-  
-  const timeDiff = nextReset.getTime() - utcNow.getTime();
-  
-  if (timeDiff <= 0) {
-    document.getElementById('countdown-time').textContent = '00:00:00';
-    return;
-  }
-  
+  let nextReset = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 22, 0, 0, 0));
+  if (now >= nextReset) nextReset.setUTCDate(nextReset.getUTCDate() + 1);
+  const timeDiff = nextReset.getTime() - now.getTime();
   const hours = Math.floor(timeDiff / (1000 * 60 * 60));
   const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-  
-  const formattedTime = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-  document.getElementById('countdown-time').textContent = formattedTime;
+  document.getElementById('countdown-time').textContent =
+    `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
 }
-
-function startCountdown() {
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-}
+function startCountdown() { updateCountdown(); setInterval(updateCountdown, 1000); }
 
 async function loadOfficialStatus(){
   try {
@@ -328,24 +308,14 @@ function displayOfficialStatus(status){
       case 'no': tombText='Closed'; break;
       case 'alpine': tombText='Alpine'; break;
     }
-    infoDiv.textContent=`${biomeText} | Tomb ${tombText}`;
-    infoDiv.style.display = 'flex';
-    infoDiv.style.alignItems = 'center';
-    infoDiv.style.justifyContent = 'center';
-    infoDiv.style.gap = '0.5rem';
-    
-    infoDiv.innerHTML = '';
-    
+    infoDiv.textContent='';
     const leftText = document.createElement('span');
     leftText.textContent = biomeText;
-    
     const pipe = document.createElement('span');
     pipe.textContent = '|';
     pipe.style.margin = '0 0.5rem';
-    
     const rightText = document.createElement('span');
     rightText.textContent = `Tomb ${tombText}`;
-    
     infoDiv.appendChild(leftText);
     infoDiv.appendChild(pipe);
     infoDiv.appendChild(rightText);
@@ -366,19 +336,26 @@ function displayOfficialStatus(status){
 
 window.onload=function(){
   startCountdown();
-  
   loadOfficialStatus();
-  const firebaseConfig={apiKey:"AIzaSyAtK5L-nubV-_i-gEgnP2_gzLi31IGl0zg", authDomain:"peak-map-vote.firebaseapp.com", projectId:"peak-map-vote", storageBucket:"peak-map-vote.firebasestorage.app", messagingSenderId:"317069037525", appId:"1:317069037525:web:43512bf56f7f67c2c5775c"};
+
+  const firebaseConfig={
+    apiKey:"AIzaSyAtK5L-nubV-_i-gEgnP2_gzLi31IGl0zg",
+    authDomain:"peak-map-vote.firebaseapp.com",
+    projectId:"peak-map-vote",
+    storageBucket:"peak-map-vote.firebasestorage.app",
+    messagingSenderId:"317069037525",
+    appId:"1:317069037525:web:43512bf56f7f67c2c5775c"
+  };
+
   firebase.initializeApp(firebaseConfig); 
   const db=firebase.firestore(); 
   let userVotes={biome:null,tomb:null};
 
   function getTodayString(){
-    const now=new Date(); 
-    const utcHour=now.getUTCHours(); 
-    const utcDate=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())); 
-    // CHANGE: rollover is now 22:00 UTC
-    if(utcHour < 22) utcDate.setUTCDate(utcDate.getUTCDate()-1); 
+    const now=new Date();
+    const utcHour=now.getUTCHours();
+    const utcDate=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()));
+    if(utcHour < 22) utcDate.setUTCDate(utcDate.getUTCDate() - 1);
     return utcDate.toISOString().split('T')[0];
   }
 
@@ -408,29 +385,22 @@ window.onload=function(){
   }
 
   async function vote(category, option){
-    if(userVotes[category]){
-      alert(`You've already voted ${userVotes[category]} for ${category}!`); 
-      return;
-    }
-    const today=getTodayString(); 
-    const btn=document.getElementById(option+'-btn'); 
-    try{
-      btn.disabled=true; 
-      btn.textContent='Voting...'; 
-      await db.collection('daily-votes').doc(today).set({votes:{[category]:{[option]:firebase.firestore.FieldValue.increment(1)}}, lastUpdated:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}); 
-      userVotes[category]=option; 
-      btn.style.transform='scale(0.95)'; 
-      setTimeout(()=>{btn.style.transform=''; btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);},200);
-    }catch(e){
-      console.error(e); 
-      alert('Error submitting vote.'); 
-      btn.disabled=false; 
-      btn.textContent=option.charAt(0).toUpperCase()+option.slice(1);
-    }
+    if(userVotes[category]===option) return; 
+    const today=getTodayString();
+    const docRef=db.collection('daily-votes').doc(today);
+    await db.runTransaction(async tx=>{
+      const doc=await tx.get(docRef);
+      if(!doc.exists){ await initializeTodayVotes(today); return; }
+      const votes=doc.data().votes;
+      if(userVotes[category]) votes[category][userVotes[category]]-=1;
+      votes[category][option]+=1;
+      userVotes[category]=option;
+      tx.update(docRef,{votes, lastUpdated: firebase.firestore.FieldValue.serverTimestamp()});
+    });
   }
 
-  initializeVoting(); 
   window.vote=vote;
+  initializeVoting();
 };
 </script>
 </body>
