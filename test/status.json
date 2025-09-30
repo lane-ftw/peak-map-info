@@ -1,5 +1,14 @@
 {
-  "date": "2025-09-30",
-  "lastUpdated": "2025-09-30T20:08:51.103992+00:00",
-  "source": "discord_bot"
+  "date": "20250930",
+  "lastUpdated": "2025-09-30T20:42:36.867802+00:00",
+  "source": "discord_bot",
+  "images": [
+    "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/test/images/20250930_1422651367914475700_20250930205150_1.jpg",
+    "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/test/images/20250930_1422651443416006698_20250930205223_1.jpg",
+    "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/test/images/20250930_1422651730893734040_20250930205806_1.jpg",
+    "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/test/images/20250930_1422651730893734040_20250930210034_1.jpg",
+    "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/test/images/20250930_1422651756835246371_20250930210112_1.jpg",
+    "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/test/images/20250930_1422679659396595864_20250930205806_1.jpg"
+  ],
+  "currentImage": "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/test/images/20250930_1422651367914475700_20250930205150_1.jpg"
 }
