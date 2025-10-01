@@ -1,5 +1,9 @@
 {
-  "date": "20250930",
-  "lastUpdated": "2025-09-30T21:02:26.095336+00:00",
-  "source": "discord_bot"
+  "date": "2025-10-01",
+  "lastUpdated": "2025-10-01T00:55:32.016130+00:00",
+  "source": "discord_bot",
+  "biome": "mesa",
+  "biomeImage": "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Nomad_Badge.webp",
+  "tomb": "yes",
+  "tombImage": "yes"
 }
