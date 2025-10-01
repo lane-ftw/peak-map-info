@@ -1,10 +1,11 @@
 {
   "date": "2025-10-01",
-  "lastUpdated": "2025-10-01T03:11:58.663096+00:00",
+  "lastUpdated": "2025-10-01T03:17:25.619867+00:00",
   "source": "discord_bot",
   "biome": "mesa",
   "biomeImage": "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Nomad_Badge.webp",
   "tomb": "yes",
   "tombImage": "yes",
-  "currentImage": "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/test/images/20251001_20250928191254_1.jpg"
+  "currentImage": "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/test/images/20251001_20250928191254_1.jpg",
+  "currentVideo": "https://github.com/lane-ftw/peak-map-info/blob/main/test/videos/20251001_2025-09-28_19-21-08.mp4"
 }
