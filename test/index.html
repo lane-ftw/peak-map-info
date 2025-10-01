@@ -213,10 +213,9 @@ body {
 
    <div style="display:flex; gap:12px; flex-wrap:wrap;">
   <!-- FAQ / Info -->
- <div class="faq-btn-container" style="display:flex; gap:20px; flex-wrap:wrap;">
-
+<div class="faq-btn-container" style="display:flex; gap:20px; justify-content:flex-start;">
   <!-- FAQ Dropdown -->
-  <div style="flex:1; min-width:250px;">
+  <div style="width:250px;">
     <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
       FAQ / Info
     </button>
@@ -232,7 +231,7 @@ body {
   </div>
 
   <!-- Map Schedule Dropdown -->
-  <div style="flex:2; min-width:400px;">
+  <div style="width:500px;">
     <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
       Map Schedule
     </button>
@@ -269,9 +268,7 @@ body {
       </table>
     </div>
   </div>
-
 </div>
-
 
     <div class="community-voting-header">Community Voting (Fallback)</div>
     <div class="current-status" id="status">
