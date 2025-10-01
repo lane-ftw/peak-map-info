@@ -1,9 +1,10 @@
 {
   "date": "2025-10-01",
-  "lastUpdated": "2025-10-01T01:34:17.076712+00:00",
+  "lastUpdated": "2025-10-01T01:37:10.751916+00:00",
   "source": "discord_bot",
   "biome": "mesa",
   "biomeImage": "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Nomad_Badge.webp",
   "tomb": "yes",
-  "tombImage": "yes"
+  "tombImage": "yes",
+  "currentImage": "https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/test/images/20251001_20250928191254_1.jpg"
 }
