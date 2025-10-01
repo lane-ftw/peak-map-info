@@ -211,29 +211,62 @@ body {
 
     <div class="section-divider"></div>
 
-    <!-- ---------- FAQ block (fixed) ---------- -->
-    <div class="faq-btn-container">
-      <!-- button's nextElementSibling MUST be the .faq-content for your existing onclick to work -->
-      <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
-        FAQ / Info
-      </button>
-
-      <!-- FAQ content immediately follows the button (important) -->
-      <div class="faq-content">
-        <p><a href="https://discord.com/channels/1368870708335083650/1397665010141892758" target="_blank" rel="noopener noreferrer">Nilla's Daily Guides!</a></p>
-        <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612" target="_blank" rel="noopener noreferrer">5ome's Achievement Guide</a></p>
-        <p>🟢 <strong>Yes:</strong> The tomb is fully open, no bugs or glitches required</p>
-        <p>🟡 <strong>Yes but:</strong> The tomb is open, but some part of it (most likely the maze) is blocked off</p>
-        <p>🟠 <strong>Sorta:</strong> The tomb is closed, but a bug in the terrain allows you to jump in it</p>
-        <p>🔴 <strong>No:</strong> The tomb is fully closed off</p>
-        <p><img src="https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Alpinist_Badge.webp" alt="Badge Winter" style="width:1em; height:1em; vertical-align:middle;"> <strong>Alpine:</strong> Today is the Alpine, only the capybara will spawn</p>
-      </div>
-
-      <!-- popup image comes AFTER the .faq-content in the DOM so the button's next sibling remains the content.
-           It is absolutely positioned (so visually it can overlap the button). -->
-      <img src="images/cc.png" alt="CC says HI!" class="faq-popup">
+   <div style="display:flex; gap:12px; flex-wrap:wrap;">
+  <!-- FAQ / Info -->
+  <div class="faq-btn-container" style="flex:1;">
+    <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
+      FAQ / Info
+    </button>
+    <div class="faq-content">
+      <p><a href="https://discord.com/channels/1368870708335083650/1397665010141892758" target="_blank" rel="noopener noreferrer">Nilla's Daily Guides!</a></p>
+      <p><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3547381612" target="_blank" rel="noopener noreferrer">5ome's Achievement Guide</a></p>
+      <p>🟢 <strong>Yes:</strong> The tomb is fully open, no bugs or glitches required</p>
+      <p>🟡 <strong>Yes but:</strong> The tomb is open, but some part of it (most likely the maze) is blocked off</p>
+      <p>🟠 <strong>Sorta:</strong> The tomb is closed, but a bug in the terrain allows you to jump in it</p>
+      <p>🔴 <strong>No:</strong> The tomb is fully closed off</p>
+      <p><img src="https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Alpinist_Badge.webp" alt="Badge Winter" style="width:1em; height:1em; vertical-align:middle;"> <strong>Alpine:</strong> Today is the Alpine, only the capybara will spawn</p>
     </div>
-    <!-- ---------- end FAQ block ---------- -->
+    <img src="images/cc.png" alt="CC says HI!" class="faq-popup">
+  </div>
+
+  <!-- Map Schedule -->
+  <div class="faq-btn-container" style="flex:1;">
+    <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
+      Map Schedule
+    </button>
+    <div class="faq-content">
+      <p>Version 1.31 (and 1.30 if you're still on that version)<br>Maps change at 12:00 PM</p>
+      <table style="width:100%; border-collapse:collapse; text-align:left;">
+        <thead>
+          <tr>
+            <th>Index</th>
+            <th>Level</th>
+            <th>Date</th>
+            <th>Map</th>
+            <th>Tomb</th>
+            <th>Path Issues</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>101</td><td>Level_3</td><td>9/23/2025</td><td>Alpine</td><td></td><td></td></tr>
+          <tr><td>102</td><td>Level_4</td><td>9/24/2025</td><td>Mesa</td><td>Closed</td><td></td></tr>
+          <tr><td>103</td><td>Level_5</td><td>9/25/2025</td><td>Alpine</td><td></td><td></td></tr>
+          <tr><td>104</td><td>Level_6</td><td>9/26/2025</td><td>Mesa</td><td>Open</td><td></td></tr>
+          <tr><td>105</td><td>Level_7</td><td>9/27/2025</td><td>Alpine</td><td></td><td></td></tr>
+          <tr><td>106</td><td>Level_8</td><td>9/28/2025</td><td>Mesa</td><td>Open</td><td></td></tr>
+          <tr><td>107</td><td>Level_9</td><td>9/29/2025</td><td>Alpine</td><td></td><td></td></tr>
+          <tr><td>108</td><td>Level_10</td><td>9/30/2025</td><td>Mesa</td><td>Open</td><td></td></tr>
+          <tr><td>109</td><td>Level_11</td><td>10/1/2025</td><td>Alpine</td><td></td><td></td></tr>
+          <tr><td>110</td><td>Level_12</td><td>10/2/2025</td><td>Mesa</td><td>Open</td><td></td></tr>
+          <tr><td>111</td><td>Level_13</td><td>10/3/2025</td><td>Alpine</td><td></td><td></td></tr>
+          <tr><td>112</td><td>Level_0</td><td>10/4/2025</td><td>Mesa</td><td>Closed</td><td></td></tr>
+          <tr><td>113</td><td>Level_1</td><td>10/5/2025</td><td>Alpine</td><td></td><td></td></tr>
+          <tr><td>114</td><td>Level_2</td><td>10/6/2025</td><td>Mesa</td><td>Open</td><td>Exit blocked, not clipable, leave through the entrance</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
     <div class="community-voting-header">Community Voting (Fallback)</div>
     <div class="current-status" id="status">
