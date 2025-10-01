@@ -213,7 +213,10 @@ body {
 
    <div style="display:flex; gap:12px; flex-wrap:wrap;">
   <!-- FAQ / Info -->
-  <div class="faq-btn-container" style="flex:1;">
+ <div class="faq-btn-container" style="display:flex; gap:20px; flex-wrap:wrap;">
+
+  <!-- FAQ Dropdown -->
+  <div style="flex:1; min-width:250px;">
     <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
       FAQ / Info
     </button>
@@ -226,25 +229,25 @@ body {
       <p>🔴 <strong>No:</strong> The tomb is fully closed off</p>
       <p><img src="https://raw.githubusercontent.com/lane-ftw/peak-map-info/main/images/64px-Alpinist_Badge.webp" alt="Badge Winter" style="width:1em; height:1em; vertical-align:middle;"> <strong>Alpine:</strong> Today is the Alpine, only the capybara will spawn</p>
     </div>
-    <img src="images/cc.png" alt="CC says HI!" class="faq-popup">
   </div>
 
-  <!-- Map Schedule -->
-  <div class="faq-btn-container" style="flex:1;">
+  <!-- Map Schedule Dropdown -->
+  <div style="flex:2; min-width:400px;">
     <button class="faq-btn" type="button" onclick="this.nextElementSibling.classList.toggle('show');">
       Map Schedule
     </button>
     <div class="faq-content">
-      <p>Version 1.31 (and 1.30 if you're still on that version)<br>Maps change at 12:00 PM</p>
-      <table style="width:100%; border-collapse:collapse; text-align:left;">
+      <p>Version 1.31 (and 1.30 if you're still on that version)</p>
+      <p>Maps change at 12:00 PM</p>
+      <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.95rem;">
         <thead>
           <tr>
-            <th>Index</th>
-            <th>Level</th>
-            <th>Date</th>
-            <th>Map</th>
-            <th>Tomb</th>
-            <th>Path Issues</th>
+            <th style="border-bottom:1px solid #555; padding:4px;">Index</th>
+            <th style="border-bottom:1px solid #555; padding:4px;">Level</th>
+            <th style="border-bottom:1px solid #555; padding:4px;">Date</th>
+            <th style="border-bottom:1px solid #555; padding:4px;">Map</th>
+            <th style="border-bottom:1px solid #555; padding:4px;">Tomb</th>
+            <th style="border-bottom:1px solid #555; padding:4px;">Path Issues</th>
           </tr>
         </thead>
         <tbody>
@@ -266,7 +269,9 @@ body {
       </table>
     </div>
   </div>
+
 </div>
+
 
     <div class="community-voting-header">Community Voting (Fallback)</div>
     <div class="current-status" id="status">
